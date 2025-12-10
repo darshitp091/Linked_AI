@@ -1,0 +1,17 @@
+src/app/(dashboard)/notifications/page.tsx(161,15): error TS2322: Type '"default" | "outline"' is not assignable to type '"primary" | "secondary" | "outline" | "ghost" | undefined'.
+  Type '"default"' is not assignable to type '"primary" | "secondary" | "outline" | "ghost" | undefined'.
+src/app/(dashboard)/notifications/page.tsx(168,15): error TS2322: Type '"default" | "outline"' is not assignable to type '"primary" | "secondary" | "outline" | "ghost" | undefined'.
+  Type '"default"' is not assignable to type '"primary" | "secondary" | "outline" | "ghost" | undefined'.
+src/app/api/uploadthing/route.ts(7,5): error TS2353: Object literal may only specify known properties, and 'uploadthingId' does not exist in type 'RouteHandlerConfig'.
+src/components/3d/floating-shapes.tsx(82,10): error TS2741: Property 'args' is missing in type '{ attach: string; count: number; array: Float32Array<ArrayBuffer>; itemSize: number; }' but required in type 'Mutable<Overwrite<Partial<Overwrite<BufferAttribute, MathProps<BufferAttribute> & ReactProps<BufferAttribute>>>, Omit<...>>>'.
+src/components/3d/hero-scene.tsx(145,10): error TS2741: Property 'args' is missing in type '{ attach: string; count: number; array: Float32Array<ArrayBuffer>; itemSize: number; }' but required in type 'Mutable<Overwrite<Partial<Overwrite<BufferAttribute, MathProps<BufferAttribute> & ReactProps<BufferAttribute>>>, Omit<...>>>'.
+src/components/3d/hero-scene.tsx(189,13): error TS2322: Type '{ children: Element[]; global: true; rotation: [number, number, number]; polar: [number, number]; azimuth: [number, number]; config: { mass: number; tension: number; }; }' is not assignable to type 'IntrinsicAttributes & PresentationControlProps'.
+  Property 'config' does not exist on type 'IntrinsicAttributes & PresentationControlProps'.
+src/components/settings/linkedin-accounts-manager.tsx(236,73): error TS2322: Type '{ className: string; title: string; }' is not assignable to type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+  Property 'title' does not exist on type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+src/components/settings/linkedin-accounts-manager.tsx(238,74): error TS2322: Type '{ className: string; title: string; }' is not assignable to type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+  Property 'title' does not exist on type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+src/lib/jobs/analytics-sync.ts(47,51): error TS7006: Parameter 'u' implicitly has an 'any' type.
+src/lib/jobs/analytics-sync.ts(54,51): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+src/lib/jobs/analytics-sync.ts(152,47): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/lib/workspaces/index.ts(553,12): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<WorkspaceRole, number>'.

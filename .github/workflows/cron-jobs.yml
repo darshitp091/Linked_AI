@@ -1,0 +1,108 @@
+# GitHub Actions - Scheduled Cron Jobs
+# This workflow runs scheduled tasks for the LinkedIn Scheduler
+
+name: Scheduled Cron Jobs
+
+on:
+  # Scheduled triggers
+  schedule:
+    # Publish Scheduled Posts - Every 15 minutes
+    - cron: '*/15 * * * *'
+
+    # Sync Analytics - Every 6 hours (at :00 minutes)
+    - cron: '0 */6 * * *'
+
+  # Manual trigger for testing
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Job to run'
+        required: true
+        type: choice
+        options:
+          - publish-scheduled-posts
+          - sync-analytics
+          - both
+
+jobs:
+  # Job 1: Publish Scheduled Posts
+  publish-scheduled-posts:
+    name: Publish Scheduled Posts
+    runs-on: ubuntu-latest
+    # Only run on schedule or if manually triggered with 'publish' or 'both'
+    if: |
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'publish-scheduled-posts' || github.event.inputs.job == 'both'))
+
+    steps:
+      - name: Publish Scheduled Posts to LinkedIn
+        run: |
+          echo "🚀 Triggering post publishing..."
+
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+            https://www.linkedai.site/api/cron/publish-scheduled \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: GitHub-Actions-Cron/1.0" \
+            -H "Content-Type: application/json")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "Status Code: $http_code"
+          echo "Response: $body"
+
+          if [ "$http_code" != "200" ]; then
+            echo "❌ Failed with status code: $http_code"
+            exit 1
+          fi
+
+          echo "✅ Successfully triggered post publishing"
+
+  # Job 2: Sync Analytics
+  sync-analytics:
+    name: Sync LinkedIn Analytics
+    runs-on: ubuntu-latest
+    # Only run on schedule (every 6 hours) or if manually triggered with 'analytics' or 'both'
+    if: |
+      (github.event_name == 'schedule' && github.event.schedule == '0 */6 * * *') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'sync-analytics' || github.event.inputs.job == 'both'))
+
+    steps:
+      - name: Sync LinkedIn Analytics Data
+        run: |
+          echo "📊 Triggering analytics sync..."
+
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+            https://www.linkedai.site/api/cron/sync-analytics \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: GitHub-Actions-Cron/1.0" \
+            -H "Content-Type: application/json")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "Status Code: $http_code"
+          echo "Response: $body"
+
+          if [ "$http_code" != "200" ]; then
+            echo "❌ Failed with status code: $http_code"
+            exit 1
+          fi
+
+          echo "✅ Successfully triggered analytics sync"
+
+  # Job 3: Monitor and Report
+  monitor:
+    name: Monitor Cron Jobs
+    runs-on: ubuntu-latest
+    needs: [publish-scheduled-posts, sync-analytics]
+    if: always()
+
+    steps:
+      - name: Report Status
+        run: |
+          echo "📋 Cron Jobs Status Report"
+          echo "=========================="
+          echo "Publish Posts: ${{ needs.publish-scheduled-posts.result }}"
+          echo "Sync Analytics: ${{ needs.sync-analytics.result }}"
+          echo "Timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"

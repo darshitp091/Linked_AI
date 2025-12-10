@@ -1,0 +1,136 @@
+
+> linkedin-scheduler@0.1.0 build
+> next build
+
+   ▲ Next.js 16.0.7 (Turbopack)
+   - Environments: .env.local
+
+ ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 36.6s
+   Skipping validation of types
+   Collecting page data using 7 workers ...
+   Generating static pages using 7 workers (0/93) ...
+   Generating static pages using 7 workers (23/93) 
+   Generating static pages using 7 workers (46/93) 
+   Generating static pages using 7 workers (69/93) 
+ ✓ Generating static pages using 7 workers (93/93) in 2.7s
+   Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /ab-tests
+├ ƒ /ab-tests/[id]
+├ ○ /ab-tests/new
+├ ○ /about
+├ ○ /analytics
+├ ○ /api
+├ ○ /api-docs
+├ ƒ /api/ab-tests
+├ ƒ /api/ab-tests/[id]
+├ ƒ /api/analytics/best-time
+├ ƒ /api/analytics/growth
+├ ƒ /api/analytics/overview
+├ ƒ /api/analytics/posts
+├ ƒ /api/analytics/sync
+├ ƒ /api/analytics/top-engagers
+├ ƒ /api/analytics/trend
+├ ƒ /api/api-keys
+├ ƒ /api/api-keys/[id]
+├ ƒ /api/calendar/create-event
+├ ƒ /api/calendar/delete-event
+├ ƒ /api/calendar/update-event
+├ ƒ /api/comments/generate-reply
+├ ƒ /api/competitors
+├ ƒ /api/competitors/[id]/posts
+├ ƒ /api/competitors/[id]/sync
+├ ƒ /api/contact
+├ ƒ /api/content/ideas/generate
+├ ƒ /api/cron/content-ideas
+├ ƒ /api/cron/follower-sync
+├ ƒ /api/cron/post-insights
+├ ƒ /api/cron/publish-scheduled
+├ ƒ /api/cron/sync-analytics
+├ ƒ /api/cron/trending-topics
+├ ƒ /api/generate
+├ ƒ /api/generate/improve
+├ ƒ /api/leads
+├ ƒ /api/leads/export
+├ ƒ /api/leads/lists
+├ ƒ /api/leads/search
+├ ƒ /api/leads/stats
+├ ƒ /api/linkedin/accounts
+├ ƒ /api/linkedin/accounts/[accountId]
+├ ƒ /api/notifications
+├ ƒ /api/notifications/[id]
+├ ƒ /api/notifications/mark-all-read
+├ ƒ /api/payments/create-order
+├ ƒ /api/payments/verify
+├ ƒ /api/posts/[id]
+├ ƒ /api/posts/[id]/insights
+├ ƒ /api/posts/[id]/predict
+├ ƒ /api/posts/generate
+├ ƒ /api/posts/publish
+├ ƒ /api/posts/save
+├ ƒ /api/posts/schedule
+├ ƒ /api/support/tickets
+├ ƒ /api/support/tickets/[id]
+├ ƒ /api/support/tickets/[id]/replies
+├ ƒ /api/trending-topics
+├ ƒ /api/uploadthing
+├ ƒ /api/user/profile
+├ ƒ /api/user/subscription
+├ ƒ /api/v1/posts
+├ ƒ /api/webhooks/razorpay
+├ ƒ /api/workspaces
+├ ƒ /api/workspaces/[workspaceId]
+├ ƒ /api/workspaces/[workspaceId]/members
+├ ƒ /api/workspaces/[workspaceId]/members/[memberId]
+├ ƒ /api/workspaces/invitations
+├ ƒ /api/workspaces/invitations/accept
+├ ƒ /auth/callback
+├ ○ /best-time
+├ ○ /blog
+├ ○ /calendar
+├ ○ /careers
+├ ○ /community
+├ ○ /contact
+├ ○ /cookies
+├ ○ /dashboard
+├ ○ /demo
+├ ○ /drafts
+├ ○ /features
+├ ○ /forgot-password
+├ ○ /generate
+├ ○ /guides
+├ ○ /help
+├ ○ /integrations
+├ ƒ /leads
+├ ƒ /leads/discover
+├ ƒ /leads/export
+├ ƒ /leads/lists
+├ ○ /login
+├ ○ /notifications
+├ ○ /press
+├ ○ /pricing
+├ ○ /privacy
+├ ○ /reset-password
+├ ○ /scheduled
+├ ○ /security
+├ ○ /settings
+├ ○ /signup
+├ ○ /support
+├ ƒ /support/[id]
+├ ○ /templates
+├ ○ /terms
+├ ○ /workspaces
+├ ƒ /workspaces/[slug]
+└ ○ /workspaces/new
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
