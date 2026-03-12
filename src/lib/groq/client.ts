@@ -1,7 +1,7 @@
 export async function generateGroqContent(
   prompt: string,
   systemPrompt: string = "You are an expert LinkedIn ghostwriter and content strategist.",
-  model: string = "llama3-70b-8192"
+  model: string = "llama-3.3-70b-versatile"
 ): Promise<string> {
   const apiKey = process.env.GROQ_API_KEY
 

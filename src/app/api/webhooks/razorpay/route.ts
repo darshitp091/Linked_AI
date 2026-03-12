@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
           .eq('razorpay_subscription_id', subIdToProcess)
           .single()
 
-        if (subToUpdate?.user_id) {
+        if (subData?.user_id) {
           if (isHaltedEvent) {
             // Mark as past_due if halted
             await supabase
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
                 status: 'past_due',
                 updated_at: new Date().toISOString(),
               })
-              .eq('user_id', subToUpdate.user_id)
+              .eq('user_id', subData.user_id)
             
             console.log(`⚠️ Subscription halted: User ${subData.user_id} marked as past_due`)
           } else {
@@ -194,12 +194,12 @@ export async function POST(request: NextRequest) {
                 posts_limit: freeLimits.posts_limit,
                 updated_at: new Date().toISOString(),
               })
-              .eq('id', subToUpdate.user_id)
+              .eq('id', subData.user_id)
 
             // Update LinkedIn account limit to 1
-            await updateAccountLimit(subToUpdate.user_id, 'free')
+            await updateAccountLimit(subData.user_id, 'free')
 
-            console.log(`🔻 Subscription cancelled: User ${subToUpdate.user_id} downgraded to free`)
+            console.log(`🔻 Subscription cancelled: User ${subData.user_id} downgraded to free`)
           }
         }
         break
