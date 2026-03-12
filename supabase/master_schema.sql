@@ -140,6 +140,20 @@ CREATE TABLE IF NOT EXISTS public.support_replies (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- NOTIFICATIONS: In-app alerts for users
+CREATE TABLE IF NOT EXISTS public.notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  title TEXT NOT NULL,
+  message TEXT NOT NULL,
+  type TEXT DEFAULT 'info' CHECK (type IN ('info', 'success', 'warning', 'error', 'system', 'plan_expiry')),
+  is_read BOOLEAN DEFAULT FALSE,
+  action_url TEXT,
+  cta_text TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- 3. FUNCTIONS & TRIGGERS
 
 -- Function to handle new user registration
@@ -255,6 +269,7 @@ CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON public.subscript
 CREATE TRIGGER update_linkedin_accounts_updated_at BEFORE UPDATE ON public.linkedin_accounts FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_posts_updated_at BEFORE UPDATE ON public.posts FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_support_tickets_updated_at BEFORE UPDATE ON public.support_tickets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER update_notifications_updated_at BEFORE UPDATE ON public.notifications FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- 4. RLS POLICIES
 
@@ -265,6 +280,7 @@ ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_activity_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.support_tickets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.support_replies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
 -- Profiles: Own data only
 CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
@@ -286,6 +302,9 @@ CREATE POLICY "Users can view own activity logs" ON public.user_activity_logs FO
 CREATE POLICY "Users can manage own support tickets" ON public.support_tickets FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can view own ticket replies" ON public.support_replies FOR SELECT USING (EXISTS (SELECT 1 FROM public.support_tickets WHERE id = ticket_id AND user_id = auth.uid()));
 CREATE POLICY "Users can create ticket replies" ON public.support_replies FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Notifications: Own data only
+CREATE POLICY "Users can manage own notifications" ON public.notifications FOR ALL USING (auth.uid() = user_id);
 
 -- 5. INDEXES
 CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);

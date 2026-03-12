@@ -13,6 +13,7 @@ interface Notification {
   message: string
   read: boolean
   action_url?: string
+  cta_text?: string
   created_at: string
 }
 
@@ -139,6 +140,8 @@ export default function NotificationBell() {
         return <Bell className={`${iconClass} text-blue-600`} />
       case 'plan_upgraded':
         return <ExternalLink className={`${iconClass} text-purple-600`} />
+      case 'plan_expiry':
+        return <Bell className={`${iconClass} text-orange-500`} />
       default:
         return <Bell className={`${iconClass} text-gray-600`} />
     }
@@ -255,6 +258,20 @@ export default function NotificationBell() {
                               </span>
                             )}
                           </div>
+                          {notification.cta_text && notification.action_url && (
+                            <div className="mt-3">
+                              <Button
+                                size="sm"
+                                className="w-full text-xs py-1.5 h-auto bg-purple-600 hover:bg-purple-700"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleNotificationClick(notification)
+                                }}
+                              >
+                                {notification.cta_text}
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

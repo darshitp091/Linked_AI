@@ -18,6 +18,7 @@ export type NotificationType =
   | 'team_member_joined'
   | 'api_key_created'
   | 'system_announcement'
+  | 'plan_expiry'
 
 export interface Notification {
   id: string
@@ -28,6 +29,7 @@ export interface Notification {
   data?: Record<string, any>
   read: boolean
   action_url?: string
+  cta_text?: string
   created_at: string
 }
 
@@ -52,6 +54,7 @@ export async function createNotification(params: {
   message: string
   data?: Record<string, any>
   actionUrl?: string
+  ctaText?: string
 }): Promise<{ success: boolean; notification?: Notification; error?: string }> {
   const supabase = createAdminClient()
 
@@ -64,6 +67,7 @@ export async function createNotification(params: {
       message: params.message,
       data: params.data || {},
       action_url: params.actionUrl,
+      cta_text: params.ctaText,
       read: false,
     })
     .select()
@@ -285,5 +289,18 @@ export async function notifyAPIKeyCreated(userId: string, keyName: string) {
     message: `API key "${keyName}" has been created. Make sure to save it securely.`,
     data: { keyName },
     actionUrl: `/settings/api`,
+  })
+}
+export async function notifyPlanExpiry(userId: string, plan: string, daysRemaining: number) {
+  const isToday = daysRemaining === 0
+  return createNotification({
+    userId,
+    type: 'plan_expiry',
+    title: isToday ? 'Plan Expiring Today' : 'Plan Expiring Soon',
+    message: isToday 
+      ? `Your ${plan.toUpperCase()} plan expires today. Upgrade again to continue without interruption.`
+      : `Your ${plan.toUpperCase()} plan will expire in ${daysRemaining} days. Renew now to keep your credits!`,
+    actionUrl: '/pricing',
+    ctaText: isToday ? 'Upgrade Now' : 'Review Plans',
   })
 }
