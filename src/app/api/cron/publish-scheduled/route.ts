@@ -5,6 +5,14 @@ import { postToLinkedIn } from '@/lib/linkedin/client'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  return handleCron(request)
+}
+
+export async function POST(request: NextRequest) {
+  return handleCron(request)
+}
+
+async function handleCron(request: NextRequest) {
   try {
     // Verify cron secret for security
     const authHeader = request.headers.get('authorization')

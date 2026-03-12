@@ -1,7 +1,15 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 
+export async function GET(request: Request) {
+  return handleCron(request)
+}
+
 export async function POST(request: Request) {
+  return handleCron(request)
+}
+
+async function handleCron(request: Request) {
   try {
     // Verify cron secret
     const authHeader = request.headers.get('authorization')

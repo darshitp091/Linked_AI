@@ -11,21 +11,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check subscription and AI credits
-    const { data: subscription } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', user.id)
+    // Check subscription and AI credits from profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('posts_remaining, posts_used, subscription_plan')
+      .eq('id', user.id)
       .single()
 
-    if (!subscription) {
+    if (!profile) {
       return NextResponse.json(
-        { error: 'No subscription found' },
+        { error: 'Profile not found' },
         { status: 403 }
       )
     }
 
-    if (subscription.posts_remaining <= 0) {
+    if (profile.posts_remaining <= 0) {
       return NextResponse.json(
         { error: 'You have reached your monthly post limit. Please upgrade your plan.' },
         { status: 403 }
@@ -45,19 +45,20 @@ export async function POST(request: NextRequest) {
     // Generate posts using OpenAI
     const posts = await generatePostVariations(topic, style, tone, length, count)
 
-    // Decrement posts_remaining
+    // Decrement posts_remaining in profile
     await supabase
-      .from('subscriptions')
+      .from('profiles')
       .update({
-        posts_remaining: subscription.posts_remaining - 1,
+        posts_remaining: profile.posts_remaining - 1,
+        posts_used: (profile.posts_used || 0) + 1,
         updated_at: new Date().toISOString(),
       })
-      .eq('user_id', user.id)
+      .eq('id', user.id)
 
     return NextResponse.json({
       success: true,
       posts,
-      remaining: subscription.posts_remaining - 1,
+      remaining: profile.posts_remaining - 1,
     })
   } catch (error: any) {
     console.error('Error generating posts:', error)

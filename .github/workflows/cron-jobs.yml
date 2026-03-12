@@ -40,7 +40,7 @@ jobs:
           echo "🚀 Triggering post publishing..."
 
           response=$(curl -s -w "\n%{http_code}" -X POST \
-            https://www.linkedai.site/api/cron/publish-scheduled \
+            https://ai-linked.vercel.app/api/cron/publish-scheduled \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "User-Agent: GitHub-Actions-Cron/1.0" \
             -H "Content-Type: application/json")
@@ -73,7 +73,7 @@ jobs:
           echo "📊 Triggering analytics sync..."
 
           response=$(curl -s -w "\n%{http_code}" -X POST \
-            https://www.linkedai.site/api/cron/sync-analytics \
+            https://ai-linked.vercel.app/api/cron/sync-analytics \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "User-Agent: GitHub-Actions-Cron/1.0" \
             -H "Content-Type: application/json")
@@ -91,11 +91,41 @@ jobs:
 
           echo "✅ Successfully triggered analytics sync"
 
-  # Job 3: Monitor and Report
+  # Job 3: Renew Credits
+  renew-credits:
+    name: Renew Monthly Credits
+    runs-on: ubuntu-latest
+    # Run once a day at midnight to check for users due for renewal
+    if: |
+      github.event_name == 'schedule' && github.event.schedule == '0 0 * * *' ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'both'))
+
+    steps:
+      - name: Trigger Credit Renewal
+        run: |
+          echo "🔄 Triggering credit renewal check..."
+
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+            https://ai-linked.vercel.app/api/cron/renew-credits \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: GitHub-Actions-Cron/1.0" \
+            -H "Content-Type: application/json")
+
+          http_code=$(echo "$response" | tail -n1)
+          echo "Status Code: $http_code"
+
+          if [ "$http_code" != "200" ]; then
+            echo "❌ Failed with status code: $http_code"
+            exit 1
+          fi
+
+          echo "✅ Credit renewal check completed"
+
+  # Job 4: Monitor and Report
   monitor:
     name: Monitor Cron Jobs
     runs-on: ubuntu-latest
-    needs: [publish-scheduled-posts, sync-analytics]
+    needs: [publish-scheduled-posts, sync-analytics, renew-credits]
     if: always()
 
     steps:
@@ -105,4 +135,5 @@ jobs:
           echo "=========================="
           echo "Publish Posts: ${{ needs.publish-scheduled-posts.result }}"
           echo "Sync Analytics: ${{ needs.sync-analytics.result }}"
+          echo "Renew Credits: ${{ needs.renew-credits.result }}"
           echo "Timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
