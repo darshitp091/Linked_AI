@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert post into database using admin client (bypasses RLS)
+    const adminClient = createAdminClient()
     const { data: post, error } = await adminClient
       .from('posts')
       .insert({
