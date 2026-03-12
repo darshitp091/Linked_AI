@@ -31,7 +31,7 @@ export async function postToLinkedIn(
     headers: {
       'Authorization': `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
-      'LinkedIn-Version': '202401', // Use a recent version
+      'LinkedIn-Version': '202602', // Use a recent version
       'X-Restli-Protocol-Version': '2.0.0',
     },
     body: JSON.stringify({
