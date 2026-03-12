@@ -141,6 +141,47 @@ CREATE TABLE IF NOT EXISTS public.support_replies (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- WORKSPACES: Regional or project-based groupings
+CREATE TABLE IF NOT EXISTS public.workspaces (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  owner_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  name TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  description TEXT,
+  plan TEXT DEFAULT 'free',
+  max_members INTEGER DEFAULT 1,
+  settings JSONB DEFAULT '{"allowMemberInvites": true, "requireApproval": false, "defaultRole": "viewer"}'::JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- WORKSPACE MEMBERS: Junction table for users and workspaces
+CREATE TABLE IF NOT EXISTS public.workspace_members (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID REFERENCES public.workspaces(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  role TEXT DEFAULT 'viewer' CHECK (role IN ('owner', 'admin', 'editor', 'viewer')),
+  status TEXT DEFAULT 'active' CHECK (status IN ('pending', 'active', 'suspended')),
+  invited_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  invited_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  joined_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(workspace_id, user_id)
+);
+
+-- WORKSPACE INVITATIONS: Pending team invitations
+CREATE TABLE IF NOT EXISTS public.workspace_invitations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID REFERENCES public.workspaces(id) ON DELETE CASCADE NOT NULL,
+  invited_by UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  email TEXT NOT NULL,
+  role TEXT DEFAULT 'viewer' CHECK (role IN ('admin', 'editor', 'viewer')),
+  token TEXT UNIQUE NOT NULL,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'declined', 'expired')),
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- NOTIFICATIONS: In-app alerts for users
 CREATE TABLE IF NOT EXISTS public.notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -270,6 +311,7 @@ CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON public.subscript
 CREATE TRIGGER update_linkedin_accounts_updated_at BEFORE UPDATE ON public.linkedin_accounts FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_posts_updated_at BEFORE UPDATE ON public.posts FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_support_tickets_updated_at BEFORE UPDATE ON public.support_tickets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER update_workspaces_updated_at BEFORE UPDATE ON public.workspaces FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_notifications_updated_at BEFORE UPDATE ON public.notifications FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- 4. RLS POLICIES
@@ -281,6 +323,9 @@ ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_activity_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.support_tickets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.support_replies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.workspaces ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.workspace_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.workspace_invitations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
 -- Profiles: Own data only
@@ -304,6 +349,17 @@ CREATE POLICY "Users can manage own support tickets" ON public.support_tickets F
 CREATE POLICY "Users can view own ticket replies" ON public.support_replies FOR SELECT USING (EXISTS (SELECT 1 FROM public.support_tickets WHERE id = ticket_id AND user_id = auth.uid()));
 CREATE POLICY "Users can create ticket replies" ON public.support_replies FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+-- Workspaces: Access based on membership
+CREATE POLICY "Users can view workspaces they are members of" ON public.workspaces FOR SELECT USING (EXISTS (SELECT 1 FROM public.workspace_members WHERE workspace_id = id AND user_id = auth.uid()));
+CREATE POLICY "Owners can update own workspaces" ON public.workspaces FOR UPDATE USING (owner_id = auth.uid());
+
+-- Workspace Members: View own or same workspace members
+CREATE POLICY "Users can view members of own workspaces" ON public.workspace_members FOR SELECT USING (EXISTS (SELECT 1 FROM public.workspace_members m2 WHERE m2.workspace_id = workspace_id AND m2.user_id = auth.uid()));
+CREATE POLICY "Admins can manage members" ON public.workspace_members FOR ALL USING (EXISTS (SELECT 1 FROM public.workspace_members m2 WHERE m2.workspace_id = workspace_id AND m2.user_id = auth.uid() AND m2.role IN ('owner', 'admin')));
+
+-- Workspace Invitations: View own or same workspace invitations
+CREATE POLICY "Users can view invitations for own workspaces" ON public.workspace_invitations FOR SELECT USING (invited_by = auth.uid() OR email = (SELECT email FROM public.profiles WHERE id = auth.uid()));
+
 -- Notifications: Own data only
 CREATE POLICY "Users can manage own notifications" ON public.notifications FOR ALL USING (auth.uid() = user_id);
 
@@ -314,3 +370,6 @@ CREATE INDEX IF NOT EXISTS idx_posts_user ON public.posts(user_id);
 CREATE INDEX IF NOT EXISTS idx_posts_status ON public.posts(status);
 CREATE INDEX IF NOT EXISTS idx_posts_scheduled_for ON public.posts(scheduled_for);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON public.subscriptions(user_id);
+CREATE INDEX IF NOT EXISTS idx_workspaces_owner ON public.workspaces(owner_id);
+CREATE INDEX IF NOT EXISTS idx_workspace_members_user ON public.workspace_members(user_id);
+CREATE INDEX IF NOT EXISTS idx_workspace_invitations_email ON public.workspace_invitations(email);
