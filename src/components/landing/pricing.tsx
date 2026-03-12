@@ -1,13 +1,15 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Check, X } from 'lucide-react'
 
 const plans = [
   {
+    id: 'free',
     name: 'Free',
-    price: 'Free',
+    price: { USD: 0, INR: 0 },
     period: '',
     description: 'Perfect for getting started',
     postsPerMonth: '5 AI posts/month',
@@ -22,8 +24,9 @@ const plans = [
     popular: false,
   },
   {
+    id: 'pro',
     name: 'Pro',
-    price: '$29',
+    price: { USD: 7.99, INR: 699 },
     period: '/month',
     description: 'For serious content creators',
     postsPerMonth: '100 AI posts/month',
@@ -31,17 +34,18 @@ const plans = [
     linkedinAccounts: '5 LinkedIn accounts',
     features: [
       '100 AI-generated posts/month',
-      'Advanced scheduling',
+      'Priority scheduling',
       'Auto-posting to LinkedIn',
-      'Social calendar',
+      'Basic analytics',
       'Priority support',
     ],
-    cta: 'Start Free Trial',
+    cta: 'Get Started',
     popular: true,
   },
   {
+    id: 'standard',
     name: 'Standard',
-    price: '$79',
+    price: { USD: 14.99, INR: 1299 },
     period: '/month',
     description: 'For growing businesses',
     postsPerMonth: '500 AI posts/month',
@@ -51,10 +55,10 @@ const plans = [
       '500 AI-generated posts/month',
       'Unlimited scheduling',
       'Auto-posting to LinkedIn',
-      'Social calendar',
-      'Dedicated support',
+      'Advanced insights',
+      '24/7 Dedicated support',
     ],
-    cta: 'Start Free Trial',
+    cta: 'Get Started',
     popular: false,
   },
 ]
@@ -70,6 +74,8 @@ const comparisonFeatures = [
 ]
 
 export function Pricing() {
+  const [currency, setCurrency] = useState<'USD' | 'INR'>('USD')
+
   return (
     <section id="pricing" className="py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6">
@@ -80,8 +86,24 @@ export function Pricing() {
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
             Simple, transparent pricing
           </h2>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-600 mb-8">
             Choose the plan that fits your content needs
+          </p>
+
+          {/* Currency Toggle */}
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <span className={`text-sm font-medium ${currency === 'USD' ? 'text-gray-900' : 'text-gray-500'}`}>USD</span>
+            <button
+              onClick={() => setCurrency(prev => prev === 'USD' ? 'INR' : 'USD')}
+              className="relative w-12 h-6 bg-gray-200 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#0a66c2]"
+            >
+              <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ${currency === 'INR' ? 'translate-x-6' : ''}`} />
+            </button>
+            <span className={`text-sm font-medium ${currency === 'INR' ? 'text-gray-900' : 'text-gray-500'}`}>INR</span>
+          </div>
+
+          <p className="text-xs text-red-500 font-medium mb-4 italic">
+            * All payments are non-refundable. No trials, pure value.
           </p>
         </div>
 
@@ -105,7 +127,9 @@ export function Pricing() {
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">{plan.name}</h3>
                 <div className="mb-2">
-                  <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                  <span className="text-4xl font-bold text-gray-900">
+                    {plan.price[currency as 'USD' | 'INR'] === 0 ? 'Free' : `${currency === 'USD' ? '$' : '₹'}${plan.price[currency as 'USD' | 'INR']}`}
+                  </span>
                   {plan.period && <span className="text-gray-500 text-lg">{plan.period}</span>}
                 </div>
                 <p className="text-sm text-gray-600 mb-4">{plan.description}</p>
@@ -129,10 +153,13 @@ export function Pricing() {
                 ))}
               </ul>
 
-              <Link href={plan.cta === 'Contact Us' ? '/contact' : '/signup'} className="mt-auto">
+              <Link 
+                href={plan.cta === 'Contact Us' ? '/contact' : `/signup?plan=${plan.id}&currency=${currency}`} 
+                className="mt-auto"
+              >
                 <Button
                   variant={plan.popular ? 'primary' : 'outline'}
-                  className="w-full"
+                  className="w-full font-bold"
                 >
                   {plan.cta}
                 </Button>

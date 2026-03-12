@@ -12,24 +12,24 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { plan } = body
+    const { plan, currency = 'USD' } = body
 
-    if (!plan || !['pro', 'standard', 'custom'].includes(plan)) {
+    if (!plan || !['pro', 'standard'].includes(plan)) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
     }
 
-    // Custom plan requires contact - don't create order
-    if (plan === 'custom') {
-      return NextResponse.json(
-        { error: 'Please contact us for custom pricing' },
-        { status: 400 }
-      )
+    const planConfig = PLAN_CONFIGS[plan as keyof typeof PLAN_CONFIGS]
+    
+    // Map of USD prices to INR (hardcoded for now as requested)
+    const priceMap: Record<string, Record<string, number>> = {
+      pro: { USD: 799, INR: 69900 }, // $7.99 in cents vs ₹699 in paise
+      standard: { USD: 1499, INR: 129900 }, // $14.99 in cents vs ₹1299 in paise
     }
 
-    const planConfig = PLAN_CONFIGS[plan as keyof typeof PLAN_CONFIGS]
+    const amount = priceMap[plan][currency] || planConfig.price
 
     // Create Razorpay order
-    const order = await createRazorpayOrder(planConfig.price, {
+    const order = await createRazorpayOrder(amount, currency, {
       user_id: user.id,
       plan: plan,
       email: user.email,

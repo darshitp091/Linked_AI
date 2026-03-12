@@ -13,7 +13,7 @@ const plans = [
   {
     id: 'free',
     name: 'Free',
-    price: 'Free',
+    price: { USD: 0, INR: 0 },
     period: '',
     description: 'Perfect for getting started',
     icon: Sparkles,
@@ -22,16 +22,10 @@ const plans = [
     linkedinAccounts: '1 LinkedIn account',
     features: [
       '5 AI-generated posts/month',
-      '50 lead discoveries/week',
-      '5 viral predictions/month',
-      'Audience growth tracker',
-      'Best time to post AI',
-      '5 AI content ideas/week',
-      'Basic post score (24h after)',
-      'Trending topics access',
-      '12+ post templates',
       'Basic scheduling',
+      'Auto-posting to LinkedIn',
       'Email support',
+      'LinkedIn connection',
     ],
     buttonText: 'Get Started Free',
     buttonLink: '/signup',
@@ -40,7 +34,7 @@ const plans = [
   {
     id: 'pro',
     name: 'Pro',
-    price: '$29',
+    price: { USD: 7.99, INR: 699 },
     period: 'per month',
     description: 'For serious content creators',
     icon: Zap,
@@ -50,27 +44,19 @@ const plans = [
     linkedinAccounts: '5 LinkedIn accounts',
     features: [
       '100 AI-generated posts/month',
-      '500 lead discoveries/week',
-      '100 viral predictions/month',
-      'Audience growth + insights',
-      'Track 3 competitors',
-      'Top 10 engagers tracking',
-      '20 AI comment replies/month',
-      '20 AI content ideas/week',
-      'Full post performance autopsy',
-      'Advanced analytics dashboard',
-      'A/B testing (2 variants)',
+      'Priority scheduling',
+      'Auto-posting to LinkedIn',
+      'Basic analytics',
       'Priority support',
-      'Custom hashtag suggestions',
     ],
-    buttonText: 'Start Free Trial',
+    buttonText: 'Get Started',
     buttonLink: '/signup?plan=pro',
     popular: true,
   },
   {
     id: 'standard',
     name: 'Standard',
-    price: '$79',
+    price: { USD: 14.99, INR: 1299 },
     period: 'per month',
     description: 'For growing businesses',
     icon: Star,
@@ -80,27 +66,20 @@ const plans = [
     linkedinAccounts: '10 LinkedIn accounts',
     features: [
       '500 AI-generated posts/month',
-      '2000 lead discoveries/week',
-      'Unlimited viral predictions',
-      'Advanced audience intelligence',
-      'Track 10 competitors',
-      'Top 50 engagers tracking',
-      '100 AI comment replies/month',
-      '50 AI content ideas/week',
-      'Team collaboration (5 users)',
-      'Content calendar',
-      'A/B testing (5 variants)',
-      'Custom branding',
-      'API access',
-      'White-label reports',
+      'Unlimited scheduling',
+      'Auto-posting to LinkedIn',
+      'Advanced insights & analytics',
+      '24/7 Dedicated support',
+      'Team collaboration',
     ],
-    buttonText: 'Start Free Trial',
+    buttonText: 'Get Started',
     buttonLink: '/signup?plan=standard',
     popular: false,
   },
 ]
 
 export default function PricingPage() {
+  const [currency, setCurrency] = useState<'USD' | 'INR'>('USD')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [currentPlan, setCurrentPlan] = useState<string>('free')
   const [loading, setLoading] = useState(true)
@@ -148,7 +127,7 @@ export default function PricingPage() {
     }
 
     // Redirect to checkout for plan changes
-    router.push(`/checkout?plan=${planId}`)
+    router.push(`/checkout?plan=${planId}&currency=${currency}`)
   }
 
   const getButtonText = (planId: string) => {
@@ -209,11 +188,27 @@ export default function PricingPage() {
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
             {isAuthenticated ? 'Upgrade Your Plan' : 'Simple, transparent pricing'}
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             {isAuthenticated
-              ? `You're currently on the ${currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)} plan. Choose a plan to unlock more features.`
-              : 'Start free and scale as you grow. All plans include 100% FREE AI generation powered by Google Gemini.'
+              ? `You're currently on the ${currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)} plan. Upgrade to unlock more power.`
+              : 'Start free and upgrade for priority features. All plans include Groq Llama 3 generation.'
             }
+          </p>
+
+          {/* Currency Toggle */}
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <span className={`text-sm font-medium ${currency === 'USD' ? 'text-gray-900' : 'text-gray-500'}`}>USD</span>
+            <button
+              onClick={() => setCurrency(prev => prev === 'USD' ? 'INR' : 'USD')}
+              className="relative w-12 h-6 bg-gray-200 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#0a66c2]"
+            >
+              <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ${currency === 'INR' ? 'translate-x-6' : ''}`} />
+            </button>
+            <span className={`text-sm font-medium ${currency === 'INR' ? 'text-gray-900' : 'text-gray-500'}`}>INR</span>
+          </div>
+
+          <p className="text-sm text-red-500 font-medium italic">
+            * All payments are non-refundable. No trials.
           </p>
         </div>
       </section>
@@ -261,7 +256,9 @@ export default function PricingPage() {
                     {/* Price */}
                     <div className="mb-6">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                        <span className="text-4xl font-bold text-gray-900">
+                          {plan.price[currency] === 0 ? 'Free' : `${currency === 'USD' ? '$' : '₹'}${plan.price[currency]}`}
+                        </span>
                         {plan.period && <span className="text-gray-600">/{plan.period.split(' ')[1]}</span>}
                       </div>
                       {plan.comparison && (
@@ -448,12 +445,12 @@ export default function PricingPage() {
               </p>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-red-50/50">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Do you offer refunds?
+                What is your refund policy?
               </h3>
               <p className="text-gray-600">
-                We offer a 14-day money-back guarantee on all paid plans. If you're not satisfied, contact support for a full refund within 14 days of your purchase.
+                To keep our pricing as low as possible, we do not offer refunds. We recommend starting with the Free plan to ensure LinkedAI meets your needs before upgrading.
               </p>
             </div>
           </div>
@@ -471,8 +468,8 @@ export default function PricingPage() {
               Join thousands of professionals using LinkedAI to save time and grow their audience.
             </p>
             <Link href="/signup">
-              <Button size="lg" className="bg-white text-[#0a66c2] hover:bg-gray-100">
-                Start Free - No Credit Card Required
+              <Button size="lg" className="bg-white text-[#0a66c2] hover:bg-gray-100 font-bold px-8">
+                Get Started Now
               </Button>
             </Link>
           </div>

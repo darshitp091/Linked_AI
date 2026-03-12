@@ -15,49 +15,31 @@ declare global {
 const planDetails = {
   pro: {
     name: 'Pro',
-    price: 29,
-    currency: '$',
+    price: { USD: 7.99, INR: 699 },
     period: 'month',
     icon: Zap,
     color: 'from-[#0a66c2] to-blue-600',
     features: [
       '100 AI-generated posts/month',
-      '500 lead discoveries/week',
+      'Priority scheduling',
       '5 LinkedIn accounts',
-      '100 viral predictions/month',
-      'Audience growth + insights',
-      'Track 3 competitors',
-      'Top 10 engagers tracking',
-      '20 AI comment replies/month',
-      '20 AI content ideas/week',
-      'Advanced analytics dashboard',
-      'A/B testing (2 variants)',
+      'Basic analytics',
       'Priority support',
     ],
   },
   standard: {
     name: 'Standard',
-    price: 79,
-    currency: '$',
+    price: { USD: 14.99, INR: 1299 },
     period: 'month',
     icon: Star,
     color: 'from-purple-500 to-purple-600',
     features: [
       '500 AI-generated posts/month',
-      '2000 lead discoveries/week',
+      'Unlimited scheduling',
       '10 LinkedIn accounts',
-      'Unlimited viral predictions',
-      'Advanced audience intelligence',
-      'Track 10 competitors',
-      'Top 50 engagers tracking',
-      '100 AI comment replies/month',
-      '50 AI content ideas/week',
-      'Team collaboration (5 users)',
-      'Content calendar',
-      'A/B testing (5 variants)',
-      'Custom branding',
-      'API access',
-      'White-label reports',
+      'Advanced insights & analytics',
+      '24/7 Dedicated support',
+      'Team collaboration',
     ],
   },
 }
@@ -66,6 +48,7 @@ export default function CheckoutPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const planId = searchParams.get('plan') as 'pro' | 'standard'
+  const currency = (searchParams.get('currency') || 'USD') as 'USD' | 'INR'
 
   const [loading, setLoading] = useState(false)
   const [processing, setProcessing] = useState(false)
@@ -114,11 +97,10 @@ export default function CheckoutPage() {
     setError(null)
 
     try {
-      // Create Razorpay order
       const orderResponse = await fetch('/api/payments/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: planId }),
+        body: JSON.stringify({ plan: planId, currency }),
       })
 
       if (!orderResponse.ok) {
@@ -242,12 +224,12 @@ export default function CheckoutPage() {
             <div className="mb-6 pb-6 border-b border-gray-200">
               <div className="flex items-baseline gap-2 mb-2">
                 <span className="text-4xl font-bold text-gray-900">
-                  {plan.currency}{plan.price}
+                  {currency === 'USD' ? '$' : '₹'}{plan.price[currency]}
                 </span>
                 <span className="text-gray-600">/ {plan.period}</span>
               </div>
-              <p className="text-sm text-gray-600">
-                Billed monthly. Cancel anytime.
+              <p className="text-sm font-semibold text-red-600 italic">
+                No trial, no refunds. Pure AI power.
               </p>
             </div>
 
@@ -288,18 +270,18 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal</span>
                   <span className="font-medium text-gray-900">
-                    {plan.currency}{plan.price}
+                    {currency === 'USD' ? '$' : '₹'}{plan.price[currency]}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Tax</span>
-                  <span className="font-medium text-gray-900">Calculated at checkout</span>
+                  <span className="font-medium text-gray-900">Included</span>
                 </div>
                 <div className="pt-4 border-t border-gray-200">
                   <div className="flex justify-between">
                     <span className="font-semibold text-gray-900">Total</span>
                     <span className="text-2xl font-bold text-gray-900">
-                      {plan.currency}{plan.price}
+                      {currency === 'USD' ? '$' : '₹'}{plan.price[currency]}
                     </span>
                   </div>
                 </div>
@@ -350,12 +332,12 @@ export default function CheckoutPage() {
                   PCI DSS compliant
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-blue-600" />
-                  Cancel anytime
+                  <Check className="w-4 h-4 text-blue-600 font-bold" />
+                  Instant Activation
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-blue-600" />
-                  14-day money-back guarantee
+                  <X className="w-4 h-4 text-red-600" />
+                  Strict No-Refund Policy
                 </li>
               </ul>
             </div>

@@ -76,7 +76,7 @@ export function Hero() {
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Link href="/signup">
                 <Button size="lg" className="group w-full sm:w-auto">
-                  Start Free Trial
+                  Get Started
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
@@ -92,15 +92,11 @@ export function Hero() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-sm text-gray-500">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-[#057642]" />
-                <span>No credit card required</span>
+                <span>Instant Setup</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-[#057642]" />
-                <span>14-day free trial</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-[#057642]" />
-                <span>Cancel anytime</span>
+                <span>Secure Payments</span>
               </div>
             </div>
           </div>

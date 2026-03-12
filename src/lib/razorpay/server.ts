@@ -22,81 +22,53 @@ export const PLAN_CONFIGS = {
     name: 'Free',
     price: 0,
     posts_limit: 5,
-    ai_credits: 5,
+    ai_credits: 50,
     features: [
-      '5 posts per month',
-      '5 AI generations',
-      'Basic analytics',
+      '5 AI-generated posts/month',
+      'Basic scheduling',
+      'Auto-posting to LinkedIn',
       'Email support',
-      'LinkedIn connection',
     ],
   },
   pro: {
     id: 'pro',
     name: 'Pro',
-    price: 2900, // $29 in cents
+    price: 799, // $7.99 in cents
     posts_limit: 100,
-    ai_credits: 100,
+    ai_credits: 500,
     features: [
-      '100 posts per month',
-      '100 AI generations',
-      'Advanced analytics',
+      '100 AI-generated posts/month',
+      'Priority scheduling',
+      'Auto-posting to LinkedIn',
       'Priority email support',
-      'Custom scheduling',
-      'LinkedIn analytics',
-      'Post templates',
+      'Basic analytics',
     ],
   },
   standard: {
     id: 'standard',
     name: 'Standard',
-    price: 7900, // $79 in cents
+    price: 1499, // $14.99 in cents
     posts_limit: 500,
-    ai_credits: 500,
+    ai_credits: 2000,
     features: [
-      '500 posts per month',
-      '500 AI generations',
-      'Advanced analytics & insights',
-      'Priority support (24/7)',
-      'Custom scheduling',
-      'LinkedIn analytics',
-      'Post templates library',
-      'Team collaboration (up to 3 users)',
-      'Content calendar',
-      'Engagement tracking',
-    ],
-  },
-  custom: {
-    id: 'custom',
-    name: 'Custom',
-    price: 0, // Contact for pricing
-    posts_limit: -1, // Custom
-    ai_credits: -1, // Custom
-    features: [
-      'Custom posts limit',
-      'Custom AI generations',
-      'Dedicated account manager',
-      '24/7 Priority support',
-      'Custom integrations',
-      'Advanced analytics & reporting',
-      'Unlimited team members',
-      'API access',
-      'White-label options',
-      'Custom features on demand',
-      'SLA guarantees',
-      'Training & onboarding',
+      '500 AI-generated posts/month',
+      'Unlimited scheduling',
+      'Auto-posting to LinkedIn',
+      'Priority 24/7 support',
+      'Advanced insights & analytics',
+      'Team collaboration',
     ],
   },
 }
 
 // Create Razorpay order
-export async function createRazorpayOrder(amount: number, notes?: any) {
+export async function createRazorpayOrder(amount: number, currency: string = 'USD', notes?: any) {
   const razorpay = getRazorpayInstance()
 
   try {
     const order = await razorpay.orders.create({
-      amount: amount, // Amount in cents for USD
-      currency: 'USD',
+      amount: amount, // Amount in smallest unit (e.g. cents for USD, paise for INR)
+      currency: currency,
       notes: notes || {},
     })
 
@@ -134,7 +106,7 @@ export function verifyWebhookSignature(
   signature: string
 ): boolean {
   const crypto = require('crypto')
-  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET || ''
+  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET || 'linkedai_razorpay_webhook_v1'
 
   if (!webhookSecret) {
     throw new Error('Razorpay webhook secret is not configured')

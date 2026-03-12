@@ -2,7 +2,7 @@
  * Plan-based feature access configuration
  */
 
-export type Plan = 'free' | 'starter' | 'pro' | 'enterprise'
+export type Plan = 'free' | 'pro' | 'standard'
 
 export interface PlanFeatures {
   // Limits
@@ -14,23 +14,18 @@ export interface PlanFeatures {
 export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
   free: {
     linkedinAccounts: 1,
-    postsPerMonth: 10,
+    postsPerMonth: 5,
     aiCredits: 50,
   },
-  starter: {
-    linkedinAccounts: 3,
-    postsPerMonth: 50,
-    aiCredits: 200,
-  },
   pro: {
-    linkedinAccounts: 10,
-    postsPerMonth: 200,
-    aiCredits: 1000,
+    linkedinAccounts: 5,
+    postsPerMonth: 100,
+    aiCredits: 500,
   },
-  enterprise: {
-    linkedinAccounts: -1, // unlimited
-    postsPerMonth: -1, // unlimited
-    aiCredits: -1, // unlimited
+  standard: {
+    linkedinAccounts: 10,
+    postsPerMonth: 500,
+    aiCredits: 2000,
   },
 }
 
