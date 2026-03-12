@@ -3,16 +3,8 @@
   "framework": "nextjs",
   "crons": [
     {
-      "path": "/api/cron/publish-scheduled",
-      "schedule": "*/15 * * * *"
-    },
-    {
       "path": "/api/cron/follower-sync",
       "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/cron/sync-analytics",
-      "schedule": "0 */6 * * *"
     }
   ]
 }
