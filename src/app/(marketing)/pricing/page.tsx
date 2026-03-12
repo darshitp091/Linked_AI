@@ -207,9 +207,6 @@ export default function PricingPage() {
             <span className={`text-sm font-medium ${currency === 'INR' ? 'text-gray-900' : 'text-gray-500'}`}>INR</span>
           </div>
 
-          <p className="text-sm text-red-500 font-medium italic">
-            * All payments are non-refundable. No trials.
-          </p>
         </div>
       </section>
 
@@ -445,14 +442,6 @@ export default function PricingPage() {
               </p>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-red-50/50">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                What is your refund policy?
-              </h3>
-              <p className="text-gray-600">
-                To keep our pricing as low as possible, we do not offer refunds. We recommend starting with the Free plan to ensure LinkedAI meets your needs before upgrading.
-              </p>
-            </div>
           </div>
         </div>
       </section>

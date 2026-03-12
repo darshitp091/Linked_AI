@@ -61,7 +61,7 @@ export default function TermsPage() {
                 <li><span className="font-semibold">Billing:</span> You will be billed in advance on a recurring basis (monthly or annually) depending on your subscription plan.</li>
                 <li><span className="font-semibold">Auto-Renewal:</span> Your subscription will automatically renew unless you cancel before the renewal date.</li>
                 <li><span className="font-semibold">Price Changes:</span> We may change subscription prices with 30 days notice. Continued use after price changes constitutes acceptance.</li>
-                <li><span className="font-semibold">Refunds:</span> Refunds are provided in accordance with our Refund Policy. Generally, subscription fees are non-refundable except as required by law.</li>
+                <li><span className="font-semibold">Refunds:</span> To keep our pricing as low as possible, all payments are non-refundable. We do not offer trials or partial refunds for unused portions of a billing cycle. We recommend starting with the Free plan to ensure LinkedAI meets your needs before upgrading.</li>
               </ul>
             </section>
 

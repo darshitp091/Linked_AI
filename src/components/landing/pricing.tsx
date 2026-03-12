@@ -102,9 +102,6 @@ export function Pricing() {
             <span className={`text-sm font-medium ${currency === 'INR' ? 'text-gray-900' : 'text-gray-500'}`}>INR</span>
           </div>
 
-          <p className="text-xs text-red-500 font-medium mb-4 italic">
-            * All payments are non-refundable. No trials, pure value.
-          </p>
         </div>
 
         {/* Pricing Cards */}

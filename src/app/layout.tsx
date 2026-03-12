@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     apple: "/icon.png",
   },
   verification: {
-    google: "google-site-verification-placeholder",
+    google: "ADD_YOUR_GOOGLE_VERIFICATION_CODE_HERE",
   },
 };
 

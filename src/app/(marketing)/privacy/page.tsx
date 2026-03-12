@@ -26,7 +26,7 @@ export default function PrivacyPage() {
               <h3 className="text-lg font-semibold text-gray-800 mb-3">1.1 Information You Provide</h3>
               <ul className="list-disc pl-6 text-gray-600 space-y-2 mb-4">
                 <li><span className="font-semibold">Account Information:</span> Name, email address, password, and profile information when you create an account</li>
-                <li><span className="font-semibold">Payment Information:</span> Billing address, credit card details (processed securely by our payment provider)</li>
+                <li><span className="font-semibold">Payment Information:</span> Billing address, credit card details (processed securely by our payment provider). Please note that all payments are non-refundable as per our Terms of Service.</li>
                 <li><span className="font-semibold">Content:</span> Posts, drafts, and other content you create using our Services</li>
                 <li><span className="font-semibold">Communications:</span> Information you provide when you contact us for support or feedback</li>
               </ul>
