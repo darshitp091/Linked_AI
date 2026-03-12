@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Ping Scheduled Posting API
         run: |
-          curl -X GET "https://${{ secrets.SITE_URL }}/api/cron/publish-scheduled" \
+          curl -X POST "https://ai-linked.vercel.app/api/cron/publish-scheduled" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
           --fail \
           --retry 3 \

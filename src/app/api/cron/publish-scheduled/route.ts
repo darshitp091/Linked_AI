@@ -123,6 +123,17 @@ async function handleCron(request: NextRequest) {
         })
       } catch (error: any) {
         console.error(`Error publishing post ${post.id}:`, error)
+        
+        // Update post status to failed in database
+        await supabase
+          .from('posts')
+          .update({
+            status: 'failed',
+            failed_reason: error.message || 'Unknown error during publishing',
+            updated_at: now.toISOString(),
+          })
+          .eq('id', post.id)
+
         results.push({
           postId: post.id,
           success: false,

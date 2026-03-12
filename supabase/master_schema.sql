@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS public.posts (
   -- Content
   content TEXT NOT NULL,
   title TEXT,
+  topic TEXT,
   
   -- Status & Scheduling
   status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'scheduled', 'publishing', 'published', 'failed', 'archived')),
