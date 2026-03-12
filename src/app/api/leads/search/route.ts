@@ -1,8 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
-import { NextResponse } from 'next/server'
-import type { LeadSearchFilters } from '@/lib/leads/types'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
 
@@ -12,14 +11,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json()
-    const filters: LeadSearchFilters = body.filters || {}
-    const limit = body.limit || 50
+    const { searchParams } = new URL(request.url)
+    const query = searchParams.get('query')
+    const jobTitle = searchParams.get('jobTitle')
+    const company = searchParams.get('company')
+    const location = searchParams.get('location')
+    const industry = searchParams.get('industry')
 
     // Check user's lead discovery limit
     const { data: subscription } = await supabase
       .from('subscriptions')
-      .select('plan, leads_limit')
+      .select('plan, leads_limit, leads_discovered_this_week')
       .eq('user_id', user.id)
       .single()
 
@@ -27,63 +29,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No subscription found' }, { status: 403 })
     }
 
-    // Check current month's usage
-    const startOfMonth = new Date()
-    startOfMonth.setDate(1)
-    startOfMonth.setHours(0, 0, 0, 0)
-
-    const { count: currentUsage } = await supabase
-      .from('leads')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .gte('created_at', startOfMonth.toISOString())
-
-    const remainingLeads = subscription.leads_limit - (currentUsage || 0)
+    // Weekly limit check
+    const weeklyLimit = subscription.plan === 'free' ? 10 :
+                       subscription.plan === 'pro' ? 125 :
+                       subscription.plan === 'standard' ? 500 : 9999
+    
+    const weeklyUsed = subscription.leads_discovered_this_week || 0
+    const remainingLeads = weeklyLimit - weeklyUsed
 
     if (remainingLeads <= 0) {
       return NextResponse.json({
-        error: 'Lead discovery limit reached for this month',
-        limit: subscription.leads_limit,
-        used: currentUsage
+        error: `Weekly lead discovery limit (${weeklyLimit}) reached.`,
+        limit: weeklyLimit,
+        used: weeklyUsed
       }, { status: 429 })
     }
 
-    // LinkedIn API search implementation
-    // For now, we'll use a mock implementation
-    // In production, integrate with LinkedIn API or use a scraping service
-
-    const mockLeads = await searchLinkedInLeads(filters, Math.min(limit, remainingLeads))
-
-    // Store discovered leads
-    const leadsToInsert = mockLeads.map(lead => ({
-      user_id: user.id,
-      linkedin_url: lead.linkedin_url,
-      linkedin_user_id: lead.linkedin_user_id,
-      full_name: lead.full_name,
-      headline: lead.headline,
-      company: lead.company,
-      job_title: lead.job_title,
-      location: lead.location,
-      profile_picture_url: lead.profile_picture_url,
-      connection_degree: lead.connection_degree,
-      tags: filters.tags || [],
-      source: 'search' as const
-    }))
-
-    const { data: insertedLeads, error: insertError } = await supabase
-      .from('leads')
-      .insert(leadsToInsert)
-      .select()
-
-    if (insertError) {
-      console.error('Error inserting leads:', insertError)
-      return NextResponse.json({ error: 'Failed to save leads' }, { status: 500 })
-    }
+    // LinkedIn API search implementation (Mock for now)
+    const mockLeads = generateMockLeads({ query, jobTitle, company, location, industry })
 
     return NextResponse.json({
-      leads: insertedLeads,
-      total: insertedLeads?.length || 0,
-      remaining_limit: remainingLeads - (insertedLeads?.length || 0)
+      leads: mockLeads,
+      remaining_limit: remainingLeads
     })
 
   } catch (error) {
@@ -92,23 +59,20 @@ export async function POST(request: Request) {
   }
 }
 
-// Mock LinkedIn search - Replace with actual LinkedIn API integration
-async function searchLinkedInLeads(filters: LeadSearchFilters, limit: number) {
-  // This is a placeholder. In production, you would:
-  // 1. Use LinkedIn API for authenticated searches
-  // 2. Use a LinkedIn scraping service (within LinkedIn's TOS)
-  // 3. Use a third-party lead database API
+function generateMockLeads(filters: any) {
+  const titles = [filters.jobTitle || 'Marketing Manager', 'Product Designer', 'Founder & CEO', 'VP of Sales', 'Software Engineer']
+  const companies = [filters.company || 'TechCorp', 'Stripe', 'Airbnb', 'Notion', 'Figma']
+  const locations = [filters.location || 'San Francisco, CA', 'New York, NY', 'London, UK', 'Remote', 'Berlin, Germany']
 
-  // Mock data for demonstration
-  return Array.from({ length: Math.min(limit, 10) }, (_, i) => ({
-    linkedin_url: `https://linkedin.com/in/user-${i}`,
-    linkedin_user_id: `user-${i}`,
-    full_name: `Lead ${i}`,
-    headline: filters.job_title || 'Professional',
-    company: filters.company || 'Company',
-    job_title: filters.job_title || 'Title',
-    location: filters.location || 'Location',
-    profile_picture_url: `https://i.pravatar.cc/150?u=user-${i}`,
-    connection_degree: filters.connection_degree || 2
+  return Array.from({ length: 15 }, (_, i) => ({
+    id: `mock-${i}`,
+    linkedin_url: `https://www.linkedin.com/in/lead-${i}`,
+    full_name: `Prospective Lead ${i + 1}`,
+    headline: `${titles[i % titles.length]} at ${companies[i % companies.length]}`,
+    company: companies[i % companies.length],
+    job_title: titles[i % titles.length],
+    location: locations[i % locations.length],
+    connection_degree: (i % 3) + 1,
+    lead_score: Math.floor(Math.random() * 40) + 60 // 60-100
   }))
 }

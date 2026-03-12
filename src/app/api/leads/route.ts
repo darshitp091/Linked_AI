@@ -67,21 +67,32 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
+    const { list_id, ...leadData } = body
+
+    // Get current usage
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('leads_discovered_this_week')
+      .eq('user_id', user.id)
+      .single()
 
     const { data: lead, error } = await supabase
       .from('leads')
       .insert({
         user_id: user.id,
-        linkedin_url: body.linkedin_url,
-        full_name: body.full_name,
-        headline: body.headline,
-        company: body.company,
-        job_title: body.job_title,
-        location: body.location,
-        profile_picture_url: body.profile_picture_url,
-        tags: body.tags || [],
-        notes: body.notes,
-        source: 'manual'
+        linkedin_url: leadData.linkedin_url,
+        full_name: leadData.full_name,
+        headline: leadData.headline,
+        company: leadData.company,
+        job_title: leadData.job_title,
+        location: leadData.location,
+        profile_picture_url: leadData.profile_picture_url,
+        connection_degree: leadData.connection_degree,
+        lead_score: leadData.lead_score,
+        tags: leadData.tags || [],
+        notes: leadData.notes,
+        source: leadData.source || 'manual',
+        status: 'new'
       })
       .select()
       .single()
@@ -90,6 +101,24 @@ export async function POST(request: Request) {
       console.error('Error creating lead:', error)
       return NextResponse.json({ error: 'Failed to create lead' }, { status: 500 })
     }
+
+    // Add to list if provided
+    if (list_id) {
+      await supabase
+        .from('lead_list_members')
+        .insert({
+          lead_list_id: list_id,
+          lead_id: lead.id
+        })
+    }
+
+    // Increment usage count
+    await supabase
+      .from('subscriptions')
+      .update({
+        leads_discovered_this_week: (subscription?.leads_discovered_this_week || 0) + 1
+      })
+      .eq('user_id', user.id)
 
     return NextResponse.json({ lead })
 

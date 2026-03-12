@@ -1,9 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
 import type { PredictionSuggestion, PredictionFactors } from '@/lib/predictions/types'
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
 export async function POST(
   request: Request,
@@ -73,10 +70,10 @@ export async function POST(
     const { data: analytics } = await supabase
       .from('post_analytics')
       .select('post_id, views, likes, comments, shares')
-      .in('post_id', historicalPosts?.map(p => p.id) || [])
+      .in('post_id', historicalPosts?.map((p: any) => p.id) || [])
 
     // Calculate average performance
-    const avgMetrics = analytics?.reduce((acc, a) => ({
+    const avgMetrics = analytics?.reduce((acc: any, a: any) => ({
       views: acc.views + (a.views || 0),
       likes: acc.likes + (a.likes || 0),
       comments: acc.comments + (a.comments || 0),
@@ -86,8 +83,8 @@ export async function POST(
     const avgEngagementRate = analytics?.length ?
       ((avgMetrics!.likes + avgMetrics!.comments + avgMetrics!.shares) / avgMetrics!.views) * 100 : 0
 
-    // Use Gemini AI to analyze the post and predict virality
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    // Use Groq AI to analyze the post and predict virality
+    const { generateGroqContent } = await import('@/lib/groq/client')
 
     const analysisPrompt = `You are an expert LinkedIn content analyst. Analyze this LinkedIn post and predict its virality score.
 
@@ -111,42 +108,40 @@ Analyze the following factors (score each 0-100):
 6. Topic Relevance: Is the topic timely and relevant?
 7. Media Quality: If media is mentioned, assess quality
 
-Provide your response in this EXACT JSON format (no markdown, no code blocks):
+Provide your response in this EXACT JSON format (no markdown, no backticks, no code blocks):
 {
-  "virality_score": <number 0-100>,
-  "confidence_level": "<low|medium|high>",
-  "predicted_views": <number>,
-  "predicted_likes": <number>,
-  "predicted_comments": <number>,
-  "predicted_shares": <number>,
-  "predicted_engagement_rate": <number>,
+  "virality_score": number,
+  "confidence_level": "low|medium|high",
+  "predicted_views": number,
+  "predicted_likes": number,
+  "predicted_comments": number,
+  "predicted_shares": number,
+  "predicted_engagement_rate": number,
   "factors": {
-    "hook_quality": <number 0-100>,
-    "content_structure": <number 0-100>,
-    "cta_strength": <number 0-100>,
-    "hashtag_relevance": <number 0-100>,
-    "optimal_length": <boolean>,
-    "optimal_timing": <boolean>,
-    "media_quality": <number 0-100>,
-    "topic_relevance": <number 0-100>
+    "hook_quality": number,
+    "content_structure": number,
+    "cta_strength": number,
+    "hashtag_relevance": number,
+    "optimal_length": boolean,
+    "optimal_timing": boolean,
+    "media_quality": number,
+    "topic_relevance": number
   },
   "suggestions": [
     {
-      "type": "<hook|structure|cta|hashtags|length|timing|media>",
-      "priority": "<high|medium|low>",
-      "message": "<specific suggestion>",
-      "expected_improvement": <percentage number>
+      "type": "hook|structure|cta|hashtags|length|timing|media",
+      "priority": "high|medium|low",
+      "message": "string",
+      "expected_improvement": number
     }
   ]
 }`
 
-    const result = await model.generateContent(analysisPrompt)
-    const response = result.response.text()
+    const response = await generateGroqContent(analysisPrompt, "You are a helpful assistant that only outputs pure JSON.")
 
     // Parse AI response
-    let prediction
+    let prediction: any
     try {
-      // Remove markdown code blocks if present
       const cleanedResponse = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
       prediction = JSON.parse(cleanedResponse)
     } catch (parseError) {

@@ -1,8 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
 export async function POST(request: Request) {
   try {
@@ -57,15 +54,15 @@ export async function POST(request: Request) {
           .limit(5)
 
         // Generate content ideas
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+        const { generateGroqContent } = await import('@/lib/groq/client')
 
         const prompt = `Generate 3 LinkedIn content ideas for ${profile.full_name || 'this user'}.
 
 Industry: ${profile.company || 'General'}
-Recent topics: ${recentPosts?.map(p => p.content.substring(0, 50)).join(', ') || 'None'}
-Trending: ${trending?.map(t => t.topic).join(', ') || 'None'}
+Recent topics: ${recentPosts?.map((p: any) => p.content.substring(0, 50)).join(', ') || 'None'}
+Trending: ${trending?.map((t: any) => t.topic).join(', ') || 'None'}
 
-Provide ONLY valid JSON (no markdown):
+Provide ONLY valid JSON (no markdown, no backticks):
 {
   "ideas": [
     {
@@ -77,9 +74,8 @@ Provide ONLY valid JSON (no markdown):
   ]
 }`
 
-        const result = await model.generateContent(prompt)
-        const response = result.response.text().replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-        const generated = JSON.parse(response)
+        const response = await generateGroqContent(prompt, "You are a helpful assistant that only outputs pure JSON.")
+        const generated = JSON.parse(response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim())
 
         // Save ideas
         const ideasToInsert = generated.ideas.map((idea: any) => ({

@@ -1,8 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
 export async function POST(request: Request) {
   try {
@@ -41,10 +38,10 @@ export async function POST(request: Request) {
     const { data: existingInsights } = await supabase
       .from('post_insights')
       .select('post_id')
-      .in('post_id', posts.map(p => p.id))
+      .in('post_id', posts.map((p: any) => p.id))
 
-    const existingPostIds = new Set(existingInsights?.map(i => i.post_id) || [])
-    const postsNeedingInsights = posts.filter(p => !existingPostIds.has(p.id))
+    const existingPostIds = new Set(existingInsights?.map((i: any) => i.post_id) || [])
+    const postsNeedingInsights = posts.filter((p: any) => !existingPostIds.has(p.id))
 
     let generatedCount = 0
     const errors: string[] = []
@@ -75,17 +72,17 @@ export async function POST(request: Request) {
         const { data: historicalAnalytics } = await supabase
           .from('post_analytics')
           .select('views, likes, comments, shares')
-          .in('post_id', userPosts?.map(p => p.id) || [])
+          .in('post_id', userPosts?.map((p: any) => p.id) || [])
 
         const avgEngagement = historicalAnalytics?.length ?
-          historicalAnalytics.reduce((sum, a) =>
+          historicalAnalytics.reduce((sum: number, a: any) =>
             sum + ((a.likes + a.comments + a.shares) / (a.views || 1)) * 100, 0
           ) / historicalAnalytics.length : 0
 
         const currentEngagement = ((analytics.likes + analytics.comments + analytics.shares) / analytics.views) * 100
 
         // Generate insights with AI
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+        const { generateGroqContent } = await import('@/lib/groq/client')
 
         const prompt = `Analyze this LinkedIn post performance concisely.
 
@@ -93,7 +90,7 @@ Content: "${post.content.substring(0, 500)}"
 Views: ${analytics.views}, Likes: ${analytics.likes}, Comments: ${analytics.comments}, Shares: ${analytics.shares}
 Engagement: ${currentEngagement.toFixed(2)}% vs Historical Avg: ${avgEngagement.toFixed(2)}%
 
-Provide ONLY valid JSON (no markdown):
+Provide ONLY valid JSON (no markdown, no backticks):
 {
   "autopsy_report": "Brief analysis",
   "success_factors": ["factor1"],
@@ -108,9 +105,8 @@ Provide ONLY valid JSON (no markdown):
   "recommended_actions": ["action1"]
 }`
 
-        const result = await model.generateContent(prompt)
-        const response = result.response.text().replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-        const insights = JSON.parse(response)
+        const response = await generateGroqContent(prompt, "You are a helpful assistant that only outputs pure JSON.")
+        const insights = JSON.parse(response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim())
 
         // Save insights
         const { error: insertError } = await supabase

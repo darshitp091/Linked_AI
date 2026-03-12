@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Eye, Heart, MessageCircle, Share2, TrendingUp, TrendingDown, ArrowUpDown } from 'lucide-react'
+import { Loader2, Eye, Heart, MessageCircle, Share2, TrendingUp, TrendingDown, ArrowUpDown, ArrowRight, ExternalLink } from 'lucide-react'
+import Link from 'next/link'
 import toast from 'react-hot-toast'
 
 interface PostAnalytics {
@@ -166,6 +167,9 @@ export default function PostPerformanceTable() {
                   {getSortIcon('engagement_rate')}
                 </div>
               </th>
+              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                Insights
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -220,6 +224,28 @@ export default function PostPerformanceTable() {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     {post.analytics?.engagementRate.toFixed(2)}%
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div className="flex items-center justify-end gap-2">
+                    <Link
+                      href={`/analytics/post-autopsy/${post.id}`}
+                      className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors group flex items-center gap-1.5"
+                      title="Deep Dive Autopsy"
+                    >
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                    {post.linkedinPostId && (
+                      <a
+                        href={`https://www.linkedin.com/feed/update/${post.linkedinPostId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-1.5 text-gray-400 hover:text-[#0a66c2] hover:bg-gray-100 rounded-lg transition-colors"
+                        title="View on LinkedIn"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
                   </div>
                 </td>
               </tr>

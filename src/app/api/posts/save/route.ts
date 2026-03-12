@@ -20,35 +20,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Use admin client to ensure profile exists (bypasses RLS)
-    const adminClient = createAdminClient()
-
-    const { data: existingProfile } = await adminClient
+    // Verify profile exists (optional, but good for error reporting)
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('id')
       .eq('id', user.id)
-      .maybeSingle()
+      .single()
 
-    if (!existingProfile) {
-      // Create profile using admin client (bypasses RLS)
-      const { error: profileError } = await adminClient.from('profiles').insert({
-        id: user.id,
-        email: user.email,
-        subscription_plan: 'free',
-        posts_remaining: 5,
-        posts_limit: 5,
-        posts_used: 0,
-        linkedin_connected: false,
-        google_calendar_enabled: false,
-      })
-
-      if (profileError) {
-        console.error('Error creating profile:', profileError)
-        return NextResponse.json(
-          { error: `Failed to create user profile: ${profileError.message}` },
-          { status: 500 }
-        )
-      }
+    if (profileError || !profile) {
+      return NextResponse.json(
+        { error: 'User profile not found. Please try logging out and in again.' },
+        { status: 404 }
+      )
     }
 
     // Insert post into database using admin client (bypasses RLS)

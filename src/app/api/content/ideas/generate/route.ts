@@ -1,8 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
 // Admin client for subscription management (bypasses RLS)
 async function getAdminClient() {
@@ -98,16 +95,17 @@ export async function POST(request: Request) {
     const { data: topAnalytics } = await supabase
       .from('post_analytics')
       .select('post_id, views, likes, comments')
-      .in('post_id', topPosts?.map(p => p.id) || [])
+      .in('post_id', topPosts?.map((p: any) => p.id) || [])
       .order('likes', { ascending: false })
       .limit(3)
 
     // Generate content ideas using AI or fallback
     let generatedIdeas
 
-    try {
-      const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL || 'gemini-2.5-flash' })
+    // Generate content ideas using Groq AI
+    const { generateGroqContent } = await import('@/lib/groq/client')
 
+    try {
       const ideaPrompt = `You are a LinkedIn content strategist. Generate 5 personalized content ideas.
 
 User Profile:
@@ -119,7 +117,7 @@ Recent Posts Topics:
 ${recentPosts?.slice(0, 5).map(p => `- "${p.content.substring(0, 100)}..."`).join('\n') || 'None'}
 
 Trending Topics:
-${trending?.map(t => `- ${t.topic} (${t.hashtag})`).join('\n') || 'None'}
+${trending?.map((t: any) => `- ${t.topic} (${t.hashtag})`).join('\n') || 'None'}
 
 Generate 5 unique content ideas that:
 1. Are different from recent posts (avoid repetition)
@@ -128,24 +126,23 @@ Generate 5 unique content ideas that:
 4. Have high engagement potential
 5. Are actionable and specific
 
-Provide response in this EXACT JSON format (no markdown):
+Provide response in this EXACT JSON format (no markdown, no backticks, no code blocks):
 {
   "ideas": [
     {
-      "title": "<catchy title>",
-      "description": "<2-3 sentence description>",
-      "content_type": "<article|story|tips|question|announcement>",
-      "reasoning": "<why this will perform well>",
-      "suggested_hooks": ["<hook 1>", "<hook 2>"],
-      "relevant_hashtags": ["<tag1>", "<tag2>", "<tag3>"],
-      "predicted_virality_score": <number 0-100>,
-      "trending_topic_id": "<topic from trending list or null>"
+      "title": "catchy title",
+      "description": "2-3 sentence description",
+      "content_type": "article|story|tips|question|announcement",
+      "reasoning": "why this will perform well",
+      "suggested_hooks": ["hook 1", "hook 2"],
+      "relevant_hashtags": ["tag1", "tag2", "tag3"],
+      "predicted_virality_score": number (0-100),
+      "trending_topic_id": "topic from trending list or null"
     }
   ]
 }`
 
-      const result = await model.generateContent(ideaPrompt)
-      const response = result.response.text()
+      const response = await generateGroqContent(ideaPrompt, "You are a helpful assistant that only outputs pure JSON.")
 
       try {
         const cleanedResponse = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()

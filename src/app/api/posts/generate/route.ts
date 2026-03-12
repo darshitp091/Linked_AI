@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { generatePostVariations } from '@/lib/gemini/client'
+import { generatePostVariations } from '@/lib/groq/client'
 
 export async function POST(request: NextRequest) {
   try {

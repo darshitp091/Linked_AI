@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
       .update({
         plan: plan,
         status: 'active',
-        posts_remaining: planConfig.posts_limit,
+        posts_limit: planConfig.posts_limit,
+        posts_used: 0,
         razorpay_payment_id: paymentId,
         current_period_end: new Date(
           Date.now() + 30 * 24 * 60 * 60 * 1000

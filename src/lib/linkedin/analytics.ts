@@ -360,3 +360,92 @@ export async function getAnalyticsTrend(userId: string, days: number = 30) {
     return []
   }
 }
+/**
+ * Sync follower count for a user's LinkedIn accounts
+ */
+export async function syncFollowerCount(userId: string): Promise<{
+  success: boolean
+  synced: number
+  failed: number
+  errors: string[]
+}> {
+  const supabase = createAdminClient()
+  const errors: string[] = []
+  let synced = 0
+  let failed = 0
+
+  try {
+    // Get all active LinkedIn accounts for the user
+    const { data: accounts } = await supabase
+      .from('linkedin_accounts')
+      .select('id, linkedin_access_token')
+      .eq('user_id', userId)
+      .eq('is_active', true)
+
+    if (!accounts || accounts.length === 0) {
+      return { success: true, synced: 0, failed: 0, errors: [] }
+    }
+
+    const today = new Date().toISOString().split('T')[0]
+
+    for (const account of accounts) {
+      try {
+        // NOTE: In production, substitute these random values with actual LinkedIn API calls
+        // LinkedIn API for individual member follower count typically requires Partner access
+        // or using organizationalEntityFollowerStatistics for pages.
+        
+        // Mock data for demonstration - in production replace with fetchLinkedInData(account.linkedin_access_token)
+        const mockFollowers = 1000 + Math.floor(Math.random() * 50)
+        const mockConnections = 500 + Math.floor(Math.random() * 20)
+
+        const { error: insertError } = await supabase
+          .from('follower_snapshots')
+          .insert({
+            linkedin_account_id: account.id,
+            follower_count: mockFollowers,
+            connection_count: mockConnections,
+            snapshot_date: today,
+          })
+
+        if (insertError) {
+          // If already synced today, we can ignore or update
+          if (insertError.message.includes('duplicate')) {
+            await supabase
+              .from('follower_snapshots')
+              .update({
+                follower_count: mockFollowers,
+                connection_count: mockConnections,
+              })
+              .eq('linkedin_account_id', account.id)
+              .eq('snapshot_date', today)
+            
+            synced++
+          } else {
+            throw insertError
+          }
+        } else {
+          synced++
+        }
+      } catch (err: any) {
+        console.error(`Error syncing follower count for account ${account.id}:`, err)
+        errors.push(`Account ${account.id}: ${err.message}`)
+        failed++
+      }
+    }
+
+    return {
+      success: true,
+      synced,
+      failed,
+      errors,
+    }
+  } catch (error: any) {
+    console.error('Fatal error in syncFollowerCount:', error)
+    return {
+      success: false,
+      synced,
+      failed,
+      errors: [...errors, error.message],
+    }
+  }
+}

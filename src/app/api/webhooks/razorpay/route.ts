@@ -61,7 +61,8 @@ export async function POST(request: NextRequest) {
             .update({
               plan: notes.plan,
               status: 'active',
-              posts_remaining: limits.posts_limit,
+              posts_limit: limits.posts_limit,
+              posts_used: 0,
               razorpay_payment_id: paymentId,
               current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
               updated_at: new Date().toISOString(),
@@ -123,7 +124,8 @@ export async function POST(request: NextRequest) {
             .update({
               plan: 'free',
               status: 'cancelled',
-              posts_remaining: freeLimits.posts_limit,
+              posts_limit: freeLimits.posts_limit,
+              posts_used: 0,
               updated_at: new Date().toISOString(),
             })
             .eq('razorpay_subscription_id', subscriptionId)

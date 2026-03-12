@@ -16,30 +16,16 @@ import { canAccessRoute } from '@/lib/plans/features'
 export const dynamic = 'force-dynamic'
 
 const navItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', requiresPlan: false },
-  { href: '/generate', icon: Wand2, label: 'Generate', requiresPlan: false },
-  { href: '/templates', icon: Sparkles, label: 'Templates', requiresPlan: false },
-  { href: '/drafts', icon: FileText, label: 'Drafts', requiresPlan: false },
-  { href: '/calendar', icon: Calendar, label: 'Calendar', requiresPlan: false },
-  { href: '/scheduled', icon: Clock, label: 'Scheduled', requiresPlan: false },
-  { href: '/analytics', icon: BarChart3, label: 'Analytics', badge: 'Pro', requiresPlan: true },
-  { href: '/best-time', icon: TrendingUp, label: 'Best Time', badge: 'Pro', requiresPlan: true },
-  { href: '/ab-tests', icon: TestTube2, label: 'A/B Tests', badge: 'Pro', requiresPlan: true },
-  // NEW UNIQUE FEATURES
-  { href: '/leads', icon: Users, label: 'Lead Generation', badge: 'New', requiresPlan: false },
-  { href: '/viral-score', icon: Target, label: 'Viral Predictor', badge: 'New', requiresPlan: false },
-  { href: '/audience-growth', icon: LineChart, label: 'Audience Growth', requiresPlan: false },
-  { href: '/competitors', icon: Eye, label: 'Competitors', badge: 'Pro', requiresPlan: true },
-  { href: '/trending', icon: Zap, label: 'Trending Topics', requiresPlan: false },
-  { href: '/content-ideas', icon: Lightbulb, label: 'Content Ideas', requiresPlan: false },
-  { href: '/top-engagers', icon: MessageSquare, label: 'Top Engagers', badge: 'Pro', requiresPlan: true },
-  // ENTERPRISE FEATURES
-  { href: '/workspaces', icon: Building2, label: 'Workspaces', badge: 'Enterprise', requiresPlan: true },
-  { href: '/api-docs', icon: Key, label: 'API Docs', badge: 'Enterprise', requiresPlan: true },
+  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { href: '/generate', icon: Wand2, label: 'Generate' },
+  { href: '/templates', icon: Sparkles, label: 'Templates' },
+  { href: '/drafts', icon: FileText, label: 'Drafts' },
+  { href: '/calendar', icon: Calendar, label: 'Calendar' },
+  { href: '/scheduled', icon: Clock, label: 'Scheduled' },
   // SETTINGS & SUPPORT
-  { href: '/notifications', icon: Bell, label: 'Notifications', requiresPlan: false },
-  { href: '/settings', icon: Settings, label: 'Settings', requiresPlan: false },
-  { href: '/support', icon: LifeBuoy, label: 'Support', requiresPlan: false },
+  { href: '/notifications', icon: Bell, label: 'Notifications' },
+  { href: '/settings', icon: Settings, label: 'Settings' },
+  { href: '/support', icon: LifeBuoy, label: 'Support' },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -119,39 +105,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         <nav className="flex-1 px-4 py-4 overflow-y-auto">
-          {navItems
-            .filter((item) => !item.requiresPlan || canAccessRoute(plan, item.href))
-            .map((item) => {
-              const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
-              const hasAccess = canAccessRoute(plan, item.href)
+          {navItems.map((item) => {
+            const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 rounded-xl transition mb-1 relative
-                    ${isActive
-                      ? 'bg-[#0a66c2]/10 text-[#0a66c2] font-medium'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}
-                  `}
-                >
-                  <item.icon className="w-5 h-5" />
-                  <span className="flex-1">{item.label}</span>
-                  {item.badge && (
-                    <span className={`
-                      px-2 py-0.5 text-xs font-semibold rounded-full
-                      ${item.badge === 'Pro' ? 'bg-purple-100 text-purple-700' : ''}
-                      ${item.badge === 'Enterprise' ? 'bg-blue-100 text-blue-700' : ''}
-                      ${item.badge === 'New' ? 'bg-green-100 text-green-700' : ''}
-                    `}>
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              )
-            })}
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setSidebarOpen(false)}
+                className={`
+                  flex items-center gap-3 px-4 py-3 rounded-xl transition mb-1 relative
+                  ${isActive
+                    ? 'bg-[#0a66c2]/10 text-[#0a66c2] font-medium'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}
+                `}
+              >
+                <item.icon className="w-5 h-5" />
+                <span className="flex-1">{item.label}</span>
+              </Link>
+            )
+          })}
         </nav>
 
         <div className="p-4 border-t border-gray-100">

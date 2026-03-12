@@ -38,8 +38,8 @@ export const PLAN_CONFIGS = {
     posts_limit: 100,
     ai_credits: 100,
     features: [
-      '25 posts per month (5x Free)',
-      '25 AI generations',
+      '100 posts per month',
+      '100 AI generations',
       'Advanced analytics',
       'Priority email support',
       'Custom scheduling',
@@ -54,8 +54,8 @@ export const PLAN_CONFIGS = {
     posts_limit: 500,
     ai_credits: 500,
     features: [
-      '100 posts per month (20x Free)',
-      '100 AI generations',
+      '500 posts per month',
+      '500 AI generations',
       'Advanced analytics & insights',
       'Priority support (24/7)',
       'Custom scheduling',

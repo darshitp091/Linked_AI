@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateLinkedInPost, generatePostVariations, generateTemplateVariations } from '@/lib/gemini/client'
+import { generateLinkedInPost, generatePostVariations, generateTemplateVariations } from '@/lib/groq/client'
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { canGenerateAI } from '@/lib/usage/limits'
 

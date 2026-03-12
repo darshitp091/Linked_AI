@@ -18,34 +18,33 @@ interface LinkedInPostResponse {
 }
 
 /**
- * Post content to LinkedIn
+ * Post content to LinkedIn using the modern /posts API
  */
 export async function postToLinkedIn(
   accessToken: string,
   userId: string,
   content: string
 ): Promise<LinkedInPostResponse> {
-  const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+  // Use the modern /posts API
+  const response = await fetch('https://api.linkedin.com/rest/posts', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
+      'LinkedIn-Version': '202401', // Use a recent version
       'X-Restli-Protocol-Version': '2.0.0',
     },
     body: JSON.stringify({
       author: `urn:li:person:${userId}`,
+      commentary: content,
+      visibility: 'PUBLIC',
+      distribution: {
+        feedDistribution: 'MAIN_FEED',
+        targetEntities: [],
+        thirdPartyDistributionChannels: [],
+      },
       lifecycleState: 'PUBLISHED',
-      specificContent: {
-        'com.linkedin.ugc.ShareContent': {
-          shareCommentary: {
-            text: content,
-          },
-          shareMediaCategory: 'NONE',
-        },
-      },
-      visibility: {
-        'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
-      },
+      isReshareDisabledByAuthor: false,
     }),
   })
 
@@ -53,6 +52,13 @@ export async function postToLinkedIn(
     const errorText = await response.text()
     console.error('LinkedIn API Error:', errorText)
     throw new Error(`LinkedIn API error: ${response.status} - ${errorText}`)
+  }
+
+  // LinkedIn returns the post URN in the x-linkedin-id header or the body
+  const postId = response.headers.get('x-restli-id') || response.headers.get('x-linkedin-id')
+  
+  if (postId) {
+    return { id: postId, created: { time: Date.now() } }
   }
 
   return await response.json()

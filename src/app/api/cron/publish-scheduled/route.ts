@@ -19,9 +19,17 @@ export async function GET(request: NextRequest) {
     const now = new Date()
 
     // Find all posts that are scheduled and due to be published
+    // Join with linkedin_accounts to get the valid token for the specific account
     const { data: scheduledPosts, error: fetchError } = await supabase
       .from('posts')
-      .select('*, profiles!inner(linkedin_access_token, linkedin_user_id)')
+      .select(`
+        *,
+        linkedin_accounts!inner(
+          linkedin_access_token,
+          linkedin_user_id,
+          is_active
+        )
+      `)
       .eq('status', 'scheduled')
       .lte('scheduled_for', now.toISOString())
       .order('scheduled_for', { ascending: true })
@@ -46,8 +54,19 @@ export async function GET(request: NextRequest) {
     // Process each scheduled post
     for (const post of scheduledPosts) {
       try {
-        // Get LinkedIn access token from profile
-        const accessToken = post.profiles?.linkedin_access_token
+        const account = post.linkedin_accounts
+        
+        if (!account || !account.is_active) {
+          console.error(`No active LinkedIn account for post ${post.id}`)
+          results.push({
+            postId: post.id,
+            success: false,
+            error: 'No active LinkedIn account connected',
+          })
+          continue
+        }
+
+        const accessToken = account.linkedin_access_token
 
         if (!accessToken) {
           console.error(`No LinkedIn access token for post ${post.id}`)
@@ -62,7 +81,7 @@ export async function GET(request: NextRequest) {
         // Post to LinkedIn using helper library
         const linkedInData = await postToLinkedIn(
           accessToken,
-          post.profiles?.linkedin_user_id,
+          account.linkedin_user_id,
           post.content
         )
 

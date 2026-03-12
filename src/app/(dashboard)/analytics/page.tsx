@@ -4,6 +4,7 @@ import { BarChart3 } from 'lucide-react'
 import AnalyticsOverview from '@/components/analytics/analytics-overview'
 import AnalyticsTrendChart from '@/components/analytics/analytics-trend-chart'
 import PostPerformanceTable from '@/components/analytics/post-performance-table'
+import TopEngagersList from '@/components/analytics/top-engagers-list'
 import PlanProtectedRoute from '@/components/auth/PlanProtectedRoute'
 
 export default function AnalyticsPage() {
@@ -30,7 +31,14 @@ export default function AnalyticsPage() {
           <AnalyticsOverview />
 
           {/* Trend Chart */}
-          <AnalyticsTrendChart />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <AnalyticsTrendChart />
+            </div>
+            <div>
+              <TopEngagersList />
+            </div>
+          </div>
 
           {/* Post Performance Table */}
           <PostPerformanceTable />

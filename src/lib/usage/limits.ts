@@ -52,30 +52,11 @@ export async function getUserPlan(userId: string): Promise<PlanType> {
 export async function getUserUsage(userId: string): Promise<UsageStats> {
   const supabase = await createClient()
 
-  // Get current month start
-  const now = new Date()
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
-
-  // Count posts this month
-  const { count: postsCount } = await supabase
-    .from('posts')
-    .select('*', { count: 'exact', head: true })
+  // Get subscription usage directly
+  const { data: subscription } = await supabase
+    .from('subscriptions')
+    .select('posts_used, ai_generations_used, linkedin_connected')
     .eq('user_id', userId)
-    .gte('created_at', monthStart)
-
-  // Count AI generations this month (from user_activity_logs)
-  const { count: aiCount } = await supabase
-    .from('user_activity_logs')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', userId)
-    .eq('activity_type', 'post_created')
-    .gte('created_at', monthStart)
-
-  // Count LinkedIn accounts
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('linkedin_connected')
-    .eq('id', userId)
     .single()
 
   // Count scheduled posts
@@ -86,9 +67,9 @@ export async function getUserUsage(userId: string): Promise<UsageStats> {
     .eq('status', 'scheduled')
 
   return {
-    postsThisMonth: postsCount || 0,
-    aiGenerationsThisMonth: aiCount || 0,
-    linkedinAccountsConnected: profile?.linkedin_connected ? 1 : 0,
+    postsThisMonth: subscription?.posts_used || 0,
+    aiGenerationsThisMonth: subscription?.ai_generations_used || 0,
+    linkedinAccountsConnected: subscription?.linkedin_connected ? 1 : 0,
     scheduledPostsCount: scheduledCount || 0,
   }
 }

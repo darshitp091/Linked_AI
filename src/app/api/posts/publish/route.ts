@@ -35,76 +35,36 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get LinkedIn access token from profile
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('linkedin_access_token, linkedin_user_id, linkedin_connected')
-      .eq('id', user.id)
+    // Get LinkedIn access token from the associated account
+    const { data: account, error: accountError } = await supabase
+      .from('linkedin_accounts')
+      .select('linkedin_access_token, linkedin_user_id, is_active')
+      .eq('id', post.linkedin_account_id)
+      .eq('user_id', user.id)
       .single()
 
-    if (profileError || !profile || !profile.linkedin_connected) {
+    if (accountError || !account || !account.is_active) {
       return NextResponse.json(
-        { error: 'LinkedIn not connected. Please connect your LinkedIn account in settings.' },
+        { error: 'Associated LinkedIn account not found or inactive. Please check your settings.' },
         { status: 403 }
       )
     }
 
-    if (!profile.linkedin_access_token) {
+    if (!account.linkedin_access_token) {
       return NextResponse.json(
         { error: 'LinkedIn access token not found. Please reconnect your LinkedIn account.' },
         { status: 403 }
       )
     }
 
-    // Publish to LinkedIn using v2 API
+    // Publish to LinkedIn using helper
+    const { postToLinkedIn } = await import('@/lib/linkedin/client')
     try {
-      // First, get the user's LinkedIn URN
-      const userInfoResponse = await fetch('https://api.linkedin.com/v2/userinfo', {
-        headers: {
-          'Authorization': `Bearer ${profile.linkedin_access_token}`,
-        },
-      })
-
-      if (!userInfoResponse.ok) {
-        throw new Error('Failed to get LinkedIn user info')
-      }
-
-      const userInfo = await userInfoResponse.json()
-      const authorUrn = `urn:li:person:${userInfo.sub}`
-
-      // Create the post
-      const linkedInResponse = await fetch('https://api.linkedin.com/v2/ugcPosts', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${profile.linkedin_access_token}`,
-          'Content-Type': 'application/json',
-          'X-Restli-Protocol-Version': '2.0.0',
-        },
-        body: JSON.stringify({
-          author: authorUrn,
-          lifecycleState: 'PUBLISHED',
-          specificContent: {
-            'com.linkedin.ugc.ShareContent': {
-              shareCommentary: {
-                text: post.content,
-              },
-              shareMediaCategory: 'NONE',
-            },
-          },
-          visibility: {
-            'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
-          },
-        }),
-      })
-
-      if (!linkedInResponse.ok) {
-        const errorData = await linkedInResponse.text()
-        console.error('LinkedIn API Error:', errorData)
-        throw new Error('Failed to publish to LinkedIn')
-      }
-
-      const linkedInData = await linkedInResponse.json()
-      const linkedInPostId = linkedInData.id
+      const linkedInData = await postToLinkedIn(
+        account.linkedin_access_token,
+        account.linkedin_user_id,
+        post.content
+      )
 
       // Update post status in database
       await supabase
@@ -112,14 +72,14 @@ export async function POST(request: NextRequest) {
         .update({
           status: 'published',
           published_at: new Date().toISOString(),
-          linkedin_post_id: linkedInPostId,
+          linkedin_post_id: linkedInData.id,
           updated_at: new Date().toISOString(),
         })
         .eq('id', postId)
 
       return NextResponse.json({
         success: true,
-        linkedInPostId,
+        linkedInPostId: linkedInData.id,
         message: 'Post published to LinkedIn successfully',
       })
     } catch (linkedInError: any) {

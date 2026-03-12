@@ -21,16 +21,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user's profile for plan checking
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('subscription_plan')
-      .eq('id', user.id)
+    // Get user's subscription for plan checking
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('plan')
+      .eq('user_id', user.id)
       .single()
 
     // Check if user has access to analytics (all plans have basic access)
     // But advanced analytics might be gated
-    const plan = profile?.subscription_plan || 'free'
+    const plan = subscription?.plan || 'free'
 
     // Get analytics summary
     const summary = await getUserAnalyticsSummary(user.id)

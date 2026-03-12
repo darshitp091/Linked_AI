@@ -1,8 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
 export async function POST(
   request: Request,
@@ -59,9 +56,9 @@ export async function POST(
     const { data: historicalAnalytics } = await supabase
       .from('post_analytics')
       .select('views, likes, comments, shares')
-      .in('post_id', historicalPosts?.map(p => p.id) || [])
+      .in('post_id', historicalPosts?.map((p: any) => p.id) || [])
 
-    const avgMetrics = historicalAnalytics?.reduce((acc, a) => ({
+    const avgMetrics = historicalAnalytics?.reduce((acc: any, a: any) => ({
       views: acc.views + (a.views || 0),
       likes: acc.likes + (a.likes || 0),
       comments: acc.comments + (a.comments || 0),
@@ -74,8 +71,8 @@ export async function POST(
     const currentEngagement = analytics.views ?
       ((analytics.likes + analytics.comments + analytics.shares) / analytics.views) * 100 : 0
 
-    // Generate AI insights using Gemini
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    // Generate AI insights using Groq
+    const { generateGroqContent } = await import('@/lib/groq/client')
 
     const insightsPrompt = `You are an expert LinkedIn content strategist. Analyze this post's performance and provide actionable insights.
 
@@ -97,37 +94,32 @@ Historical Average:
 
 Posted: ${post.published_at}
 
-Provide a detailed analysis in this EXACT JSON format (no markdown, no code blocks):
+Provide a detailed analysis in this EXACT JSON format (no markdown, no backticks, no code blocks):
 {
-  "autopsy_report": "<detailed markdown analysis of performance>",
+  "autopsy_report": "string (detailed markdown analysis of performance)",
   "success_factors": [
-    "<specific element that worked well>",
-    "<another success factor>"
+    "string"
   ],
   "areas_for_improvement": [
-    "<specific thing to improve>",
-    "<another improvement area>"
+    "string"
   ],
   "comparison_to_history": {
-    "better_than_avg": <boolean>,
-    "percentile": <number 0-100>,
-    "best_performing_element": "<what worked best>",
-    "underperforming_element": "<what didn't work>"
+    "better_than_avg": boolean,
+    "percentile": number,
+    "best_performing_element": "string",
+    "underperforming_element": "string"
   },
   "key_learnings": [
-    "<key takeaway 1>",
-    "<key takeaway 2>"
+    "string"
   ],
   "recommended_actions": [
-    "<specific action to take>",
-    "<another recommended action>"
+    "string"
   ]
 }`
 
-    const result = await model.generateContent(insightsPrompt)
-    const response = result.response.text()
+    const response = await generateGroqContent(insightsPrompt, "You are a helpful assistant that only outputs pure JSON.")
 
-    let insights
+    let insights: any
     try {
       const cleanedResponse = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
       insights = JSON.parse(cleanedResponse)
