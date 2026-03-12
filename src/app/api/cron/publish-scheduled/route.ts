@@ -32,7 +32,7 @@ async function handleCron(request: NextRequest) {
       .from('posts')
       .select(`
         *,
-        linkedin_accounts!inner(
+        linkedin_accounts(
           linkedin_access_token,
           linkedin_user_id,
           is_active
@@ -62,8 +62,23 @@ async function handleCron(request: NextRequest) {
     // Process each scheduled post
     for (const post of scheduledPosts) {
       try {
-        const account = post.linkedin_accounts
+        let account = post.linkedin_accounts
         
+        // If account association is missing (older posts), try to find active account
+        if (!account) {
+          const { data: activeAccount } = await supabase
+            .from('linkedin_accounts')
+            .select('linkedin_access_token, linkedin_user_id, is_active')
+            .eq('user_id', post.user_id)
+            .eq('is_active', true)
+            .limit(1)
+            .single()
+          
+          if (activeAccount) {
+            account = activeAccount
+          }
+        }
+
         if (!account || !account.is_active) {
           console.error(`No active LinkedIn account for post ${post.id}`)
           results.push({
