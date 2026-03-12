@@ -104,9 +104,50 @@ export async function POST(request: NextRequest) {
         }
         break
 
+      case 'subscription.activated':
+      case 'subscription.charged':
+        // Subscription is active or renewed
+        const subId = event.payload.subscription.entity.id
+        const subNotes = event.payload.subscription.entity.notes
+
+        if (subNotes && subNotes.user_id && subNotes.plan) {
+          const limits = getPlanLimits(subNotes.plan)
+          const periodEnd = new Date(event.payload.subscription.entity.current_end * 1000).toISOString()
+
+          // 1. Update subscriptions table
+          await supabase
+            .from('subscriptions')
+            .update({
+              plan: subNotes.plan,
+              status: 'active',
+              posts_limit: limits.posts_limit,
+              posts_used: 0, // Reset posts on renewal
+              razorpay_subscription_id: subId,
+              current_period_end: periodEnd,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('user_id', subNotes.user_id)
+
+          // 2. Update profiles table
+          await supabase
+            .from('profiles')
+            .update({
+              subscription_plan: subNotes.plan,
+              posts_limit: limits.posts_limit,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', subNotes.user_id)
+
+          // 3. Update LinkedIn limit
+          await updateAccountLimit(subNotes.user_id, subNotes.plan)
+
+          console.log(`✅ Subscription ${event.event}: User ${subNotes.user_id} is now ${subNotes.plan}`)
+        }
+        break
+
       case 'subscription.cancelled':
         // Subscription was cancelled
-        const subscriptionId = event.payload.subscription.entity.id
+        const cancelledSubId = event.payload.subscription.entity.id
 
         // Downgrade to free plan
         const { data: subscription } = await supabase
