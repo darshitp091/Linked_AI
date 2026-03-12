@@ -146,45 +146,61 @@ export async function POST(request: NextRequest) {
         break
 
       case 'subscription.cancelled':
-        // Subscription was cancelled
-        const cancelledSubId = event.payload.subscription.entity.id
+      case 'subscription.halted':
+        // Subscription was cancelled or halted due to payment failure
+        const subIdToProcess = event.payload.subscription.entity.id
+        const isHaltedEvent = event.event === 'subscription.halted'
 
-        // Downgrade to free plan
-        const { data: subscription } = await supabase
+        // Downgrade to free plan or mark as past_due
+        const { data: subData } = await supabase
           .from('subscriptions')
           .select('user_id')
-          .eq('razorpay_subscription_id', subscriptionId)
+          .eq('razorpay_subscription_id', subIdToProcess)
           .single()
 
-        if (subscription?.user_id) {
-          const freeLimits = getPlanLimits('free')
+        if (subToUpdate?.user_id) {
+          if (isHaltedEvent) {
+            // Mark as past_due if halted
+            await supabase
+              .from('subscriptions')
+              .update({
+                status: 'past_due',
+                updated_at: new Date().toISOString(),
+              })
+              .eq('user_id', subToUpdate.user_id)
+            
+            console.log(`⚠️ Subscription halted: User ${subData.user_id} marked as past_due`)
+          } else {
+            // Downgrade to free plan
+            const freeLimits = getPlanLimits('free')
 
-          // Update subscription to free plan
-          await supabase
-            .from('subscriptions')
-            .update({
-              plan: 'free',
-              status: 'cancelled',
-              posts_limit: freeLimits.posts_limit,
-              posts_used: 0,
-              updated_at: new Date().toISOString(),
-            })
-            .eq('razorpay_subscription_id', subscriptionId)
+            // Update subscription to free plan
+            await supabase
+              .from('subscriptions')
+              .update({
+                plan: 'free',
+                status: 'cancelled',
+                posts_limit: freeLimits.posts_limit,
+                posts_used: 0,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('razorpay_subscription_id', subIdToProcess)
 
-          // Update profiles to free plan
-          await supabase
-            .from('profiles')
-            .update({
-              subscription_plan: 'free',
-              posts_limit: freeLimits.posts_limit,
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', subscription.user_id)
+            // Update profiles to free plan
+            await supabase
+              .from('profiles')
+              .update({
+                subscription_plan: 'free',
+                posts_limit: freeLimits.posts_limit,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', subToUpdate.user_id)
 
-          // Update LinkedIn account limit to 1
-          await updateAccountLimit(subscription.user_id, 'free')
+            // Update LinkedIn account limit to 1
+            await updateAccountLimit(subToUpdate.user_id, 'free')
 
-          console.log(`🔻 Subscription cancelled: User ${subscription.user_id} downgraded to free`)
+            console.log(`🔻 Subscription cancelled: User ${subToUpdate.user_id} downgraded to free`)
+          }
         }
         break
 
