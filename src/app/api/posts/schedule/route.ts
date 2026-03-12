@@ -28,26 +28,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if LinkedIn is connected
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('linkedin_connected')
-      .eq('id', user.id)
+    // Check for active LinkedIn account
+    const { data: linkedinAccount } = await supabase
+      .from('linkedin_accounts')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .limit(1)
       .single()
 
-    if (!profile?.linkedin_connected) {
+    if (!linkedinAccount) {
       return NextResponse.json(
         { error: 'Please connect your LinkedIn account first to schedule posts' },
         { status: 400 }
       )
     }
 
-    // Update post with scheduled information
+    // Update post with scheduled information and linkedin account id
     const { data: post, error: updateError } = await supabase
       .from('posts')
       .update({
         status: 'scheduled',
         scheduled_for: scheduledDate.toISOString(),
+        linkedin_account_id: linkedinAccount.id,
         updated_at: new Date().toISOString(),
       })
       .eq('id', postId)
