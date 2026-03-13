@@ -336,40 +336,22 @@ export default function PricingPage() {
                   <td className="py-4 px-4 text-center text-sm text-gray-900">500/month</td>
                 </tr>
                 <tr className="border-b border-gray-100">
-                  <td className="py-4 px-4 text-sm text-gray-700">Lead Discovery</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900">50/week</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900 bg-blue-50">500/week</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900">2000/week</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="py-4 px-4 text-sm text-gray-700">Viral Predictions</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900">5/month</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900 bg-blue-50">100/month</td>
+                  <td className="py-4 px-4 text-sm text-gray-700">Scheduling Engine</td>
+                  <td className="py-4 px-4 text-center text-sm text-gray-900">Basic</td>
+                  <td className="py-4 px-4 text-center text-sm text-gray-900 bg-blue-50">Priority</td>
                   <td className="py-4 px-4 text-center text-sm text-gray-900">Unlimited</td>
                 </tr>
                 <tr className="border-b border-gray-100">
-                  <td className="py-4 px-4 text-sm text-gray-700">Competitor Tracking</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-400">—</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900 bg-blue-50">3 competitors</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900">10 competitors</td>
+                  <td className="py-4 px-4 text-sm text-gray-700">Auto-posting to LinkedIn</td>
+                  <td className="py-4 px-4 text-center text-sm"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                  <td className="py-4 px-4 text-center text-sm bg-blue-50"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
+                  <td className="py-4 px-4 text-center text-sm"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
                 </tr>
                 <tr className="border-b border-gray-100">
-                  <td className="py-4 px-4 text-sm text-gray-700">Top Engagers</td>
+                  <td className="py-4 px-4 text-sm text-gray-700">Analytics & Insights</td>
                   <td className="py-4 px-4 text-center text-sm text-gray-400">—</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900 bg-blue-50">Top 10</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900">Top 50</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="py-4 px-4 text-sm text-gray-700">AI Comment Replies</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-400">—</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900 bg-blue-50">20/month</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900">100/month</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="py-4 px-4 text-sm text-gray-700">Content Ideas</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900">5/week</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900 bg-blue-50">20/week</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900">50/week</td>
+                  <td className="py-4 px-4 text-center text-sm text-gray-900 bg-blue-50">Basic</td>
+                  <td className="py-4 px-4 text-center text-sm text-gray-900">Advanced</td>
                 </tr>
                 <tr className="border-b border-gray-100">
                   <td className="py-4 px-4 text-sm text-gray-700">LinkedIn Accounts</td>
@@ -378,16 +360,10 @@ export default function PricingPage() {
                   <td className="py-4 px-4 text-center text-sm text-gray-900">10</td>
                 </tr>
                 <tr className="border-b border-gray-100">
-                  <td className="py-4 px-4 text-sm text-gray-700">Team Members</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900">1</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900 bg-blue-50">1</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900">5</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="py-4 px-4 text-sm text-gray-700">A/B Testing</td>
+                  <td className="py-4 px-4 text-sm text-gray-700">Team Collaboration</td>
                   <td className="py-4 px-4 text-center text-sm text-gray-400">—</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900 bg-blue-50">2 variants</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900">5 variants</td>
+                  <td className="py-4 px-4 text-center text-sm text-gray-400 bg-blue-50">—</td>
+                  <td className="py-4 px-4 text-center text-sm"><Check className="w-5 h-5 text-green-600 mx-auto" /></td>
                 </tr>
                 <tr className="border-b border-gray-100">
                   <td className="py-4 px-4 text-sm text-gray-700">API Access</td>
@@ -399,7 +375,7 @@ export default function PricingPage() {
                   <td className="py-4 px-4 text-sm text-gray-700">Support</td>
                   <td className="py-4 px-4 text-center text-sm text-gray-900">Email</td>
                   <td className="py-4 px-4 text-center text-sm text-gray-900 bg-blue-50">Priority</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-900">Priority</td>
+                  <td className="py-4 px-4 text-center text-sm text-gray-900">24/7 Dedicated</td>
                 </tr>
               </tbody>
             </table>

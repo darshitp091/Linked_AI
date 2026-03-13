@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Check, Sparkles, Zap, Star, Shield, CreditCard } from 'lucide-react'
+import { ArrowLeft, Check, Sparkles, Zap, Star, Shield, CreditCard, X } from 'lucide-react'
 
 declare global {
   interface Window {
@@ -44,7 +44,9 @@ const planDetails = {
   },
 }
 
-export default function CheckoutPage() {
+import { Suspense } from 'react'
+
+function CheckoutContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const planId = searchParams.get('plan') as 'pro' | 'standard'
@@ -345,5 +347,13 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center p-6"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>}>
+      <CheckoutContent />
+    </Suspense>
   )
 }
