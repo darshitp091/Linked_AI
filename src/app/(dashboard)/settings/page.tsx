@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { User, Linkedin, CreditCard, Save, Loader2, Settings as SettingsIcon, Bell, Shield, Palette, LogOut } from 'lucide-react'
+import { User, Linkedin, CreditCard, Save, Loader2, Settings as SettingsIcon, Bell, Shield, LogOut } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import LinkedInAccountsManager from '@/components/settings/linkedin-accounts-manager'
@@ -122,7 +122,7 @@ export default function SettingsPage() {
           {/* Left Column - Main Settings */}
           <div className="lg:col-span-2 space-y-6">
             {/* Profile Section */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div id="section-notifications" className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
@@ -176,10 +176,12 @@ export default function SettingsPage() {
             </div>
 
             {/* LinkedIn Accounts Manager */}
-            <LinkedInAccountsManager
-              userPlan={profile?.subscription_plan || 'free'}
-              onUpgrade={() => router.push('/pricing')}
-            />
+            <div id="section-privacy">
+              <LinkedInAccountsManager
+                userPlan={profile?.subscription_plan || 'free'}
+                onUpgrade={() => router.push('/pricing')}
+              />
+            </div>
 
             {/* Google Calendar Integration */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -323,64 +325,15 @@ export default function SettingsPage() {
                   </p>
                 </div>
 
-                {/* Lead Discovery Usage */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-semibold text-gray-700">Lead Discovery</span>
-                    <span className="text-sm font-bold text-gray-900">
-                      {subscription?.leads_discovered_this_week || 0}/{
-                        subscription?.plan === 'free' ? 10 :
-                        subscription?.plan === 'pro' ? 125 :
-                        subscription?.plan === 'standard' ? 500 : 10
-                      }
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-100 rounded-full h-2">
-                    <div
-                      className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all"
-                      style={{
-                        width: `${Math.min(100, ((subscription?.leads_discovered_this_week || 0) / (
-                          subscription?.plan === 'free' ? 10 :
-                          subscription?.plan === 'pro' ? 125 :
-                          subscription?.plan === 'standard' ? 500 : 10
-                        )) * 100)}%`
-                      }}
-                    ></div>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Resets {subscription?.leads_week_reset_at ? new Date(subscription.leads_week_reset_at).toLocaleDateString() : 'weekly'}
+                {/* Member/Subscription Start Date */}
+                <div className="pt-4 border-t">
+                  <p className="text-xs text-gray-600">
+                    {subscription?.plan === 'free'
+                      ? `Member since ${user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '—'}`
+                      : `Subscribed on ${subscription?.created_at ? new Date(subscription.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '—'}`
+                    }
                   </p>
                 </div>
-
-                {/* Viral Predictions Usage */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-semibold text-gray-700">Viral Predictions</span>
-                    <span className="text-sm font-bold text-gray-900">
-                      {subscription?.predictions_this_week || 0}/{subscription?.viral_predictions_limit || 3}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-100 rounded-full h-2">
-                    <div
-                      className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all"
-                      style={{
-                        width: `${Math.min(100, ((subscription?.predictions_this_week || 0) / (subscription?.viral_predictions_limit || 3)) * 100)}%`
-                      }}
-                    ></div>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {(subscription?.viral_predictions_limit || 3) - (subscription?.predictions_this_week || 0)} predictions remaining this week
-                  </p>
-                </div>
-
-                {/* Reset Date Info */}
-                {subscription?.ai_generations_reset_at && (
-                  <div className="pt-4 border-t">
-                    <p className="text-xs text-gray-600">
-                      Monthly limits reset on {new Date(subscription.ai_generations_reset_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -408,17 +361,19 @@ export default function SettingsPage() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <h3 className="text-sm font-semibold text-gray-900 mb-4">Quick Actions</h3>
               <div className="space-y-2">
-                <button className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl font-medium transition-colors text-left flex items-center gap-3">
+                <button
+                  onClick={() => document.getElementById('section-notifications')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl font-medium transition-colors text-left flex items-center gap-3"
+                >
                   <Bell className="w-5 h-5 text-gray-500" />
                   Notifications
                 </button>
-                <button className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl font-medium transition-colors text-left flex items-center gap-3">
+                <button
+                  onClick={() => document.getElementById('section-privacy')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl font-medium transition-colors text-left flex items-center gap-3"
+                >
                   <Shield className="w-5 h-5 text-gray-500" />
-                  Privacy & Security
-                </button>
-                <button className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl font-medium transition-colors text-left flex items-center gap-3">
-                  <Palette className="w-5 h-5 text-gray-500" />
-                  Appearance
+                  Privacy &amp; Security
                 </button>
                 <button
                   onClick={handleLogout}
