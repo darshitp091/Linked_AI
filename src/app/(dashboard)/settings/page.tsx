@@ -12,7 +12,8 @@ export default function SettingsPage() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [subscription, setSubscription] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [dataLoading, setDataLoading] = useState(true)
   const [fullName, setFullName] = useState('')
   const supabase = createClient()
   const router = useRouter()
@@ -46,6 +47,7 @@ export default function SettingsPage() {
           setSubscription(subscriptionData)
         }
       }
+      setDataLoading(false)
     }
     getUser()
   }, [supabase.auth])
@@ -84,7 +86,7 @@ export default function SettingsPage() {
   }, [])
 
   const handleSave = async () => {
-    setLoading(true)
+    setSaving(true)
     const { error } = await supabase.auth.updateUser({
       data: { full_name: fullName },
     })
@@ -94,12 +96,23 @@ export default function SettingsPage() {
     } else {
       toast.success('Settings saved!')
     }
-    setLoading(false)
+    setSaving(false)
   }
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
+  }
+
+  if (dataLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 flex justify-center pt-32 p-6 lg:p-8">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-[#0a66c2]" />
+          <p className="text-gray-500 font-medium">Loading your settings...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -157,10 +170,10 @@ export default function SettingsPage() {
 
                 <button
                   onClick={handleSave}
-                  disabled={loading}
+                  disabled={saving}
                   className="w-full px-6 py-3 bg-[#0a66c2] hover:bg-[#004182] text-white rounded-xl font-medium transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  {loading ? (
+                  {saving ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
                       Saving...

@@ -11,7 +11,6 @@ export const initPostHog = () => {
   const apiHost = process.env.NEXT_PUBLIC_POSTHOG_HOST
 
   if (!apiKey || apiKey === 'your_posthog_key_here') {
-    console.warn('PostHog API key not configured')
     return
   }
 

@@ -27,10 +27,18 @@ function PostHogPageView() {
 }
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
-  // Initialize PostHog on mount
+  const hasKey = process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_KEY !== 'your_posthog_key_here';
+
+  // Initialize PostHog on mount only if key exists
   useEffect(() => {
-    initPostHog()
-  }, [])
+    if (hasKey) {
+      initPostHog()
+    }
+  }, [hasKey])
+
+  if (!hasKey) {
+    return <>{children}</>
+  }
 
   return (
     <>
