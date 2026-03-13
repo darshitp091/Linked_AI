@@ -21,8 +21,8 @@ export async function generateGroqContent(
         { role: 'system', content: systemPrompt },
         { role: 'user', content: prompt }
       ],
-      temperature: 0.7,
-      max_tokens: 1024,
+      temperature: 0.75,
+      max_tokens: 2048,  // Increased from 1024 to allow long-form content
     }),
   })
 
@@ -43,7 +43,7 @@ export async function generateGroqContent(
 }
 
 /**
- * Generate LinkedIn post using Groq
+ * Generate LinkedIn post using Groq - returns structured post with title
  */
 export async function generateLinkedInPost(
   topic: string,
@@ -52,27 +52,38 @@ export async function generateLinkedInPost(
   length: number
 ): Promise<string> {
   const lengthGuide: Record<number, string> = {
-    1: 'very short (1-2 sentences, ~50 words)',
-    2: 'short (3-4 sentences, ~100 words)',
-    3: 'medium (2-3 paragraphs, ~150-200 words)',
-    4: 'long (3-4 paragraphs, ~250-300 words)',
-    5: 'very long (4-5 paragraphs, ~350-400 words)',
+    1: 'very short (100-150 words)',
+    2: 'short (150-250 words)',
+    3: 'medium (300-500 words, 8-12 paragraphs/bullet points)',
+    4: 'long (500-700 words, 12-18 paragraphs/bullet points)',
+    5: 'very long (700-1000 words, detailed with multiple sections)',
   }
 
-  const systemPrompt = `You are an expert LinkedIn ghostwriter and content strategist. Your task is to create engaging, professional LinkedIn posts that drive engagement and showcase thought leadership.`
-  
-  const prompt = `Guidelines:
-- Write in a ${style} style with a ${tone} tone
-- Use line breaks for readability
-- Include relevant emojis (but don't overdo it)
-- End with a call-to-action or thought-provoking question
-- Make it authentic and conversational
-- Avoid corporate jargon and buzzwords
-- Focus on providing value to the reader
+  const systemPrompt = `You are an expert LinkedIn ghostwriter and content strategist. 
+Your posts go viral because they are detailed, insightful, and genuinely valuable.
+You always write posts that are AT LEAST the minimum word count specified.
+You NEVER truncate or cut content short.`
 
-Create a ${lengthGuide[length] || 'medium'} LinkedIn post about: ${topic}
+  const prompt = `Write a ${lengthGuide[length] || 'medium (300-500 words)'} LinkedIn post about: "${topic}"
 
-Make it engaging, authentic, and valuable to the reader. Only return the post content, no additional commentary.`
+STRICT FORMAT (follow exactly):
+TITLE: [Write a punchy, attention-grabbing title in 5-10 words]
+
+[FULL POST CONTENT - write the complete post below]
+
+Requirements:
+- Writing style: ${style}
+- Tone: ${tone}  
+- Start with a powerful hook sentence that stops the scroll
+- Use SHORT paragraphs (1-3 sentences max each) for readability
+- Add relevant emojis naturally throughout (not just at the start)
+- Include 3-5 bullet points or numbered insights in the middle
+- End with a strong call-to-action question to drive comments
+- Add 3-5 relevant hashtags at the very end
+- Write the COMPLETE post — do not cut it short
+- Make it genuinely insightful and valuable, not generic
+
+Return ONLY the TITLE line followed by the post content. No extra commentary.`
 
   return generateGroqContent(prompt, systemPrompt)
 }
@@ -106,8 +117,8 @@ export async function generateFromTemplate(
   tone: string,
   userInput?: { topics?: string[] }
 ): Promise<string> {
-  const systemPrompt = `You are an expert LinkedIn ghostwriter. I have a proven LinkedIn post template that I want you to fill in with engaging content.`
-  
+  const systemPrompt = `You are an expert LinkedIn ghostwriter. I have a proven LinkedIn post template that I want you to fill in with engaging content. Write detailed, complete content — never truncate.`
+
   const prompt = `Template Name: ${template.name}
 Tone: ${tone}
 
@@ -120,11 +131,13 @@ Instructions:
 ${userInput?.topics && userInput.topics.length > 0 ? `- Focus the content on these topics: ${userInput.topics.join(', ')}` : ''}
 - Maintain the ${tone} tone throughout
 - Keep the same formatting, line breaks, and structure as the template
-- Make it authentic and engaging
+- Make it authentic, engaging, and COMPLETE — do not cut it short
 - Use emojis where appropriate (don't overdo it)
-- Ensure the content flows naturally
+- Ensure the content flows naturally and is at least 300 words
 
-Return ONLY the filled-in post content, no additional commentary.`
+TITLE: [Write a punchy title for this post]
+
+Return the TITLE line first, then the full post content. No additional commentary.`
 
   return generateGroqContent(prompt, systemPrompt)
 }

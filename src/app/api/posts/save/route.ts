@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { content, topic, status = 'draft' } = body
+    const { content, title, topic, status = 'draft' } = body
 
     if (!content) {
       return NextResponse.json(
@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
       .insert({
         user_id: user.id,
         content,
+        title: title || null,
         topic,
         status,
       })

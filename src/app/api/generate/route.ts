@@ -162,7 +162,18 @@ export async function POST(request: NextRequest) {
 
 // Helper function to format post content into structured data
 function formatPostContent(content: string, topic: string): GeneratedPost {
-  const lines = content.split('\n').filter(line => line.trim())
+  let title = ''
+  let postBody = content
+
+  // Extract title if Groq returned a TITLE: line
+  const titleMatch = content.match(/^TITLE:\s*(.+)/im)
+  if (titleMatch) {
+    title = titleMatch[1].trim()
+    // Remove the TITLE: line and any surrounding blank lines from the body
+    postBody = content.replace(/^TITLE:\s*.+\n*/im, '').trim()
+  }
+
+  const lines = postBody.split('\n').filter(line => line.trim())
 
   // Extract hook (first meaningful line)
   const hook = lines[0] || ''
@@ -176,7 +187,7 @@ function formatPostContent(content: string, topic: string): GeneratedPost {
 
   // Extract hashtags from content
   const hashtagRegex = /#\w+/g
-  const hashtags = content.match(hashtagRegex) || []
+  const hashtags = postBody.match(hashtagRegex) || []
   const suggested_hashtags = [...new Set(hashtags)] // Remove duplicates
 
   // If no hashtags in content, suggest some based on topic
@@ -188,11 +199,11 @@ function formatPostContent(content: string, topic: string): GeneratedPost {
   }
 
   return {
-    topic,
+    topic: title || topic, // Use generated title if available
     hook: hook.replace(hashtagRegex, '').trim(),
     body: body.replace(hashtagRegex, '').trim(),
     cta: cta.replace(hashtagRegex, '').trim(),
-    full_post: content,
+    full_post: postBody, // Store body without the TITLE: line
     suggested_hashtags
   }
 }

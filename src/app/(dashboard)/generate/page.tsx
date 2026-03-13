@@ -124,6 +124,7 @@ export default function GeneratePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           content: post.full_post,
+          title: post.topic, // post.topic now contains the AI-generated title
           topic: post.topic,
           status: 'draft',
         }),
@@ -530,9 +531,18 @@ export default function GeneratePage() {
                         placeholder="Edit your post..."
                       />
                     ) : (
-                      <p className="text-gray-800 whitespace-pre-wrap text-sm leading-relaxed">
-                        {post.full_post}
-                      </p>
+                      <div className="space-y-4">
+                        {/* Title */}
+                        {post.topic && (
+                          <h3 className="text-base font-bold text-gray-900 leading-tight border-b border-gray-100 pb-3">
+                            {post.topic}
+                          </h3>
+                        )}
+                        {/* Full Post Body */}
+                        <p className="text-gray-800 whitespace-pre-wrap text-sm leading-relaxed">
+                          {post.full_post}
+                        </p>
+                      </div>
                     )}
 
                     {/* Hashtags */}
