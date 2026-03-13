@@ -50,10 +50,17 @@ async function handleCron(request: NextRequest) {
       )
     }
 
+    const { count: upcomingCount } = await supabase
+      .from('posts')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'scheduled')
+      .gt('scheduled_for', now.toISOString())
+
     if (!scheduledPosts || scheduledPosts.length === 0) {
       return NextResponse.json({
         message: 'No posts to publish',
         published: 0,
+        upcoming: upcomingCount || 0,
       })
     }
 
