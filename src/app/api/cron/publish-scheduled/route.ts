@@ -166,13 +166,6 @@ async function handleCron(request: NextRequest) {
 
     const successCount = results.filter((r) => r.success).length
 
-    // Debug: Check if there are any upcoming posts that aren't due yet
-    const { count: upcomingCount } = await supabase
-      .from('posts')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'scheduled')
-      .gt('scheduled_for', now.toISOString())
-
     return NextResponse.json({
       message: `Published ${successCount} of ${scheduledPosts.length} scheduled posts`,
       published: successCount,
