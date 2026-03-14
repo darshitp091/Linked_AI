@@ -41,6 +41,33 @@ export async function GET(request: NextRequest) {
 
       console.log('[Auth Callback] Session exchanged successfully for user:', data.user?.email)
 
+      const source = requestUrl.searchParams.get('source')
+      
+      // Check if a profile already exists for this user
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', data.user.id)
+        .maybeSingle()
+
+      const exists = !!profile
+
+      // Guard 1: Existing user trying to signup
+      if (source === 'signup' && exists) {
+        console.log('[Auth Callback] Existing user tried to signup')
+        return NextResponse.redirect(
+          new URL('/login?error=Account already exists. Please sign in instead.', request.url)
+        )
+      }
+
+      // Guard 2: New user trying to login
+      if (source === 'login' && !exists) {
+        console.log('[Auth Callback] New user tried to login')
+        return NextResponse.redirect(
+          new URL('/signup?error=No account found. Please create an account first.', request.url)
+        )
+      }
+
       // Check if this is a LinkedIn connection from settings (user already logged in)
       const linkedinConnect = requestUrl.searchParams.get('linkedin_connect')
 
