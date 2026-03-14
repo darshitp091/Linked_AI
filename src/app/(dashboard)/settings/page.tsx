@@ -104,6 +104,47 @@ export default function SettingsPage() {
     router.push('/login')
   }
 
+  const handleConnectCalendar = async () => {
+    try {
+      const response = await fetch('/api/calendar/auth')
+      const data = await response.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        toast.error('Failed to initialize calendar connection')
+      }
+    } catch (error) {
+      console.error('Error connecting calendar:', error)
+      toast.error('Failed to connect Google Calendar')
+    }
+  }
+
+  const handleDisconnectCalendar = async () => {
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        google_calendar_enabled: false,
+        google_access_token: null,
+        google_refresh_token: null,
+        google_token_expiry: null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', user?.id)
+
+    if (error) {
+      toast.error('Failed to disconnect calendar')
+    } else {
+      toast.success('Google Calendar disconnected')
+      setProfile({ 
+        ...profile, 
+        google_calendar_enabled: false,
+        google_access_token: null,
+        google_refresh_token: null,
+        google_token_expiry: null
+      })
+    }
+  }
+
   if (dataLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 flex justify-center pt-32 p-6 lg:p-8">
@@ -239,46 +280,69 @@ export default function SettingsPage() {
 
                   <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">Calendar Sync</p>
+                      <p className="text-sm font-medium text-gray-900">Connection Status</p>
                       <p className="text-xs text-gray-500 mt-1">
-                        {profile?.google_calendar_enabled ? 'Events syncing to primary calendar' : 'Enable to create calendar events'}
+                        {profile?.google_refresh_token ? 'Connected to Google Calendar' : 'Not connected'}
                       </p>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={profile?.google_calendar_enabled || false}
-                        onChange={async (e) => {
-                          const enabled = e.target.checked
-                          const { error } = await supabase
-                            .from('profiles')
-                            .update({
-                              google_calendar_enabled: enabled,
-                              updated_at: new Date().toISOString()
-                            })
-                            .eq('id', user?.id)
-
-                          if (error) {
-                            toast.error('Failed to update calendar sync')
-                          } else {
-                            toast.success(enabled ? 'Calendar sync enabled' : 'Calendar sync disabled')
-                            setProfile({ ...profile, google_calendar_enabled: enabled })
-                          }
-                        }}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
+                    {profile?.google_refresh_token ? (
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-700 rounded-lg text-xs font-semibold">
+                          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                          Connected
+                        </div>
+                        <button
+                          onClick={handleDisconnectCalendar}
+                          className="text-xs text-red-600 hover:text-red-700 font-medium hover:underline"
+                        >
+                          Disconnect
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={handleConnectCalendar}
+                        className="px-4 py-2 bg-[#0a66c2] hover:bg-[#004182] text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
+                      >
+                        Connect Google Calendar
+                      </button>
+                    )}
                   </div>
 
-                  {profile?.google_calendar_enabled && (
-                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <p className="text-xs text-green-800 flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
-                        </svg>
-                        Google Calendar sync is active. Your scheduled posts will appear in your calendar.
-                      </p>
+                  {profile?.google_refresh_token && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-xl">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Sync Enabled</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Automatically create events for scheduled posts
+                          </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={profile?.google_calendar_enabled || false}
+                            onChange={async (e) => {
+                              const enabled = e.target.checked
+                              const { error } = await supabase
+                                .from('profiles')
+                                .update({
+                                  google_calendar_enabled: enabled,
+                                  updated_at: new Date().toISOString()
+                                })
+                                .eq('id', user?.id)
+
+                              if (error) {
+                                toast.error('Failed to update sync settings')
+                              } else {
+                                toast.success(enabled ? 'Auto-sync enabled' : 'Auto-sync disabled')
+                                setProfile({ ...profile, google_calendar_enabled: enabled })
+                              }
+                            }}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                      </div>
                     </div>
                   )}
                 </div>

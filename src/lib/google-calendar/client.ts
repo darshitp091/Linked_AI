@@ -1,4 +1,5 @@
 import { google } from 'googleapis'
+import { createClient } from '@/lib/supabase/server'
 
 export interface CalendarEvent {
   id?: string
@@ -21,27 +22,76 @@ export interface CalendarEvent {
   }
 }
 
-export function getGoogleCalendarClient() {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_API_KEY
+const REDIRECT_URI = `${process.env.NEXT_PUBLIC_APP_URL}/api/calendar/callback`
 
-  if (!apiKey || apiKey === 'your_google_calendar_api_key_here') {
-    throw new Error('Google Calendar API key is not configured')
+export function getGoogleOAuth2Client() {
+  const clientId = process.env.GOOGLE_CALENDAR_CLIENT_ID
+  const clientSecret = process.env.GOOGLE_CALENDAR_CLIENT_SECRET
+
+  if (!clientId || !clientSecret) {
+    throw new Error('Google Calendar credentials are not configured')
   }
 
-  const calendar = google.calendar({
-    version: 'v3',
-    auth: apiKey,
+  return new google.auth.OAuth2(clientId, clientSecret, REDIRECT_URI)
+}
+
+export async function getAuthorizedCalendarClient(userId: string) {
+  const supabase = await createClient()
+  
+  // Get tokens from profiles table
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('google_access_token, google_refresh_token, google_token_expiry')
+    .eq('id', userId)
+    .single()
+
+  if (error || !profile?.google_refresh_token) {
+    throw new Error('Google Calendar is not connected')
+  }
+
+  const oauth2Client = getGoogleOAuth2Client()
+  
+  oauth2Client.setCredentials({
+    access_token: profile.google_access_token,
+    refresh_token: profile.google_refresh_token,
+    expiry_date: profile.google_token_expiry ? new Date(profile.google_token_expiry).getTime() : undefined
   })
 
-  return calendar
+  // Check if token is expired and refresh if necessary
+  oauth2Client.on('tokens', async (tokens) => {
+    if (tokens.refresh_token) {
+      // Store new tokens
+      await supabase
+        .from('profiles')
+        .update({
+          google_access_token: tokens.access_token,
+          google_refresh_token: tokens.refresh_token,
+          google_token_expiry: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId)
+    } else if (tokens.access_token) {
+      await supabase
+        .from('profiles')
+        .update({
+          google_access_token: tokens.access_token,
+          google_token_expiry: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId)
+    }
+  })
+
+  return google.calendar({ version: 'v3', auth: oauth2Client })
 }
 
 export async function createCalendarEvent(
+  userId: string,
   calendarId: string,
   event: CalendarEvent
 ): Promise<string> {
   try {
-    const calendar = getGoogleCalendarClient()
+    const calendar = await getAuthorizedCalendarClient(userId)
 
     const response = await calendar.events.insert({
       calendarId,
@@ -72,12 +122,13 @@ export async function createCalendarEvent(
 }
 
 export async function updateCalendarEvent(
+  userId: string,
   calendarId: string,
   eventId: string,
   event: Partial<CalendarEvent>
 ): Promise<void> {
   try {
-    const calendar = getGoogleCalendarClient()
+    const calendar = await getAuthorizedCalendarClient(userId)
 
     await calendar.events.patch({
       calendarId,
@@ -96,11 +147,12 @@ export async function updateCalendarEvent(
 }
 
 export async function deleteCalendarEvent(
+  userId: string,
   calendarId: string,
   eventId: string
 ): Promise<void> {
   try {
-    const calendar = getGoogleCalendarClient()
+    const calendar = await getAuthorizedCalendarClient(userId)
 
     await calendar.events.delete({
       calendarId,
@@ -112,9 +164,9 @@ export async function deleteCalendarEvent(
   }
 }
 
-export async function listUserCalendars(): Promise<Array<{ id: string; summary: string }>> {
+export async function listUserCalendars(userId: string): Promise<Array<{ id: string; summary: string }>> {
   try {
-    const calendar = getGoogleCalendarClient()
+    const calendar = await getAuthorizedCalendarClient(userId)
 
     const response = await calendar.calendarList.list()
 

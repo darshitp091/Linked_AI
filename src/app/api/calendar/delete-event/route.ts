@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     const calendarId = profile?.google_calendar_id || 'primary'
 
     // Delete calendar event
-    await deleteCalendarEvent(calendarId, eventId)
+    await deleteCalendarEvent(user.id, calendarId, eventId)
 
     return NextResponse.json({
       success: true,

@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     const calendarId = profile.google_calendar_id || 'primary'
 
     // Create calendar event
-    const eventId = await createCalendarEvent(calendarId, {
+    const eventId = await createCalendarEvent(user.id, calendarId, {
       summary: title,
       description: `${description}\n\n📱 This post will be automatically published to LinkedIn at the scheduled time.\n\nView and edit: ${process.env.NEXT_PUBLIC_APP_URL}/scheduled`,
       start: {

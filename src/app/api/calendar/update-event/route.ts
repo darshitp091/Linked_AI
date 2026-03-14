@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     const calendarId = profile?.google_calendar_id || 'primary'
 
     // Update calendar event
-    await updateCalendarEvent(calendarId, eventId, {
+    await updateCalendarEvent(user.id, calendarId, eventId, {
       summary: title,
       description: description,
       start: startTime ? {
