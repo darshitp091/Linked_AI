@@ -22,7 +22,7 @@ const allFeatures = [
   {
     icon: Sparkles,
     title: 'AI Content Generation',
-    description: 'Generate engaging LinkedIn posts with our advanced AI powered by Google Gemini 1.5 Flash (100% FREE).',
+    description: 'Generate engaging LinkedIn posts with our advanced AI powered by Groq (100% FREE).',
     details: ['Multiple writing styles', 'Industry-specific content', 'Tone customization', 'Hook optimization'],
     mockup: 'ai-generation',
     badge: 'Core',
@@ -46,69 +46,13 @@ const allFeatures = [
     badge: 'Core',
     plan: 'Free'
   },
-
-  // NEW UNIQUE FEATURES
   {
-    icon: Users,
-    title: 'Lead Generation & Discovery',
-    description: 'Find and track LinkedIn leads by job title, company, and industry. Export to CRM.',
-    details: ['50 leads/mo (Free)', '500 leads/mo (Pro)', 'Lead scoring 0-100', 'CSV/JSON export'],
-    mockup: 'lead-generation',
-    badge: 'New',
-    plan: 'Free'
-  },
-  {
-    icon: Target,
-    title: 'Viral Content Predictor',
-    description: 'AI predicts your post\'s virality BEFORE publishing with actionable improvement tips.',
-    details: ['Virality score 0-100', 'Improvement suggestions', '5 predictions/mo (Free)', '100 predictions/mo (Pro)'],
-    mockup: 'viral-predictor',
-    badge: 'New',
-    plan: 'Free'
-  },
-  {
-    icon: LineChart,
-    title: 'Audience Growth Tracker',
-    description: 'Track follower growth over time with detailed charts and predictions.',
-    details: ['Daily snapshots', '7d, 30d charts', 'Growth velocity', 'Milestone alerts'],
-    mockup: 'audience-growth',
-    badge: 'New',
-    plan: 'Free'
-  },
-  {
-    icon: TrendingUp,
-    title: 'Best Time to Post AI',
-    description: 'AI analyzes YOUR audience to find optimal posting times.',
-    details: ['Personalized analysis', 'Day/hour heatmap', 'Auto-schedule at best time', 'Weekly reports'],
-    mockup: 'best-time',
+    icon: BarChart,
+    title: 'Advanced Analytics',
+    description: 'Track performance with detailed analytics and insights.',
+    details: ['Engagement metrics', 'Growth tracking', 'Content performance', 'Audience demographics'],
+    mockup: 'analytics',
     badge: 'Core',
-    plan: 'Free'
-  },
-  {
-    icon: Eye,
-    title: 'Competitor Intelligence',
-    description: 'Monitor competitor posts and performance to stay ahead.',
-    details: ['Track 3 competitors (Pro)', 'Performance benchmarks', 'Content gap analysis', 'Trending topics'],
-    mockup: 'competitors',
-    badge: 'New',
-    plan: 'Pro'
-  },
-  {
-    icon: MessageSquare,
-    title: 'Top Engagers & AI Replies',
-    description: 'Identify your most engaged followers and auto-generate comment responses.',
-    details: ['Top 10 supporters', '20 AI replies/mo (Pro)', 'Sentiment analysis', 'One-click posting'],
-    mockup: 'top-engagers',
-    badge: 'New',
-    plan: 'Pro'
-  },
-  {
-    icon: Brain,
-    title: 'Post Performance Autopsy',
-    description: 'AI explains WHY your post succeeded/failed 24h after publishing.',
-    details: ['Success factors', 'Improvement areas', 'Key learnings', 'Recommended actions'],
-    mockup: 'post-insights',
-    badge: 'New',
     plan: 'Pro'
   },
   {
@@ -119,15 +63,6 @@ const allFeatures = [
     mockup: 'content-ideas',
     badge: 'New',
     plan: 'Free'
-  },
-  {
-    icon: BarChart,
-    title: 'Advanced Analytics',
-    description: 'Track performance with detailed analytics and insights.',
-    details: ['Engagement metrics', 'Growth tracking', 'Content performance', 'Audience demographics'],
-    mockup: 'analytics',
-    badge: 'Core',
-    plan: 'Pro'
   },
 ]
 
@@ -167,159 +102,7 @@ function FeatureMockup({ type }: { type: string }) {
     }
   }, [])
 
-  // ... (keep all existing mockup components, just add ref)
-
-  if (type === 'lead-generation') {
-    return (
-      <div ref={mockupRef} className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 transform-gpu">
-        <div className="flex items-center justify-between mb-4">
-          <span className="font-medium text-gray-900">Lead Discovery</span>
-          <Users className="w-5 h-5 text-gray-400" />
-        </div>
-        <div className="space-y-3">
-          {[
-            { name: 'Sarah Johnson', title: 'VP Marketing', company: 'TechCorp', score: 94 },
-            { name: 'Mike Chen', title: 'CEO', company: 'StartupX', score: 87 },
-            { name: 'Emma Davis', title: 'Director', company: 'InnovateCo', score: 82 },
-          ].map((lead, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-medium">
-                {lead.name.split(' ').map(n => n[0]).join('')}
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900">{lead.name}</div>
-                <div className="text-xs text-gray-500">{lead.title} at {lead.company}</div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="text-sm font-medium text-green-600">{lead.score}</div>
-                <div className="w-2 h-2 rounded-full bg-green-500"></div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-700">Weekly Limit</span>
-            <span className="font-bold text-blue-600">7/10 used</span>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (type === 'viral-predictor') {
-    return (
-      <div ref={mockupRef} className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 transform-gpu">
-        <div className="flex items-center gap-2 mb-4">
-          <Target className="w-5 h-5 text-purple-600" />
-          <span className="font-medium text-gray-900">Virality Prediction</span>
-        </div>
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Virality Score</span>
-            <span className="text-2xl font-bold text-purple-600">87/100</span>
-          </div>
-          <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full w-[87%]" />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <div className="flex items-start gap-2 p-2 bg-green-50 rounded">
-            <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5" />
-            <span className="text-xs text-gray-700">Strong hook detected</span>
-          </div>
-          <div className="flex items-start gap-2 p-2 bg-yellow-50 rounded">
-            <Lightbulb className="w-4 h-4 text-yellow-600 mt-0.5" />
-            <span className="text-xs text-gray-700">Add a question to boost engagement +15%</span>
-          </div>
-        </div>
-        <div className="mt-4 text-center">
-          <span className="text-xs text-gray-500">Predicted: 12K views, 840 likes</span>
-        </div>
-      </div>
-    )
-  }
-
-  if (type === 'audience-growth') {
-    return (
-      <div ref={mockupRef} className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 transform-gpu">
-        <div className="flex items-center justify-between mb-4">
-          <span className="font-medium text-gray-900">Follower Growth</span>
-          <LineChart className="w-5 h-5 text-gray-400" />
-        </div>
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="p-3 bg-blue-50 rounded-lg">
-            <div className="text-2xl font-bold text-gray-900">+284</div>
-            <div className="text-xs text-gray-600">This Week</div>
-            <div className="text-xs text-green-600">+18%</div>
-          </div>
-          <div className="p-3 bg-purple-50 rounded-lg">
-            <div className="text-2xl font-bold text-gray-900">2.4K</div>
-            <div className="text-xs text-gray-600">Total</div>
-            <div className="text-xs text-green-600">+24%</div>
-          </div>
-        </div>
-        <div className="flex items-end gap-1 h-20">
-          {[30, 45, 38, 52, 48, 60, 55, 68, 62, 75, 70, 82].map((h, i) => (
-            <div
-              key={i}
-              className="flex-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded-t hover:opacity-80 transition-opacity"
-              style={{ height: `${h}%` }}
-            />
-          ))}
-        </div>
-        <div className="mt-4 text-center text-xs text-gray-500">
-          30-day growth trend
-        </div>
-      </div>
-    )
-  }
-
-  if (type === 'best-time') {
-    return (
-      <div ref={mockupRef} className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 transform-gpu">
-        <div className="flex items-center justify-between mb-4">
-          <span className="font-medium text-gray-900">Best Times</span>
-          <TrendingUp className="w-5 h-5 text-gray-400" />
-        </div>
-        <div className="grid grid-cols-7 gap-1 mb-3">
-          {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
-            <div key={i} className="text-center text-xs text-gray-500">{d}</div>
-          ))}
-        </div>
-        <div className="space-y-1">
-          {['9AM', '12PM', '3PM', '6PM'].map((time, row) => (
-            <div key={time} className="grid grid-cols-7 gap-1">
-              {[1,2,3,4,5,6,7].map((day) => {
-                const isHot = (row === 1 && day === 3) || (row === 2 && day === 5)
-                const isWarm = (row === 0 && day === 2) || (row === 3 && day === 4)
-                return (
-                  <div
-                    key={day}
-                    className={`aspect-square rounded flex items-center justify-center text-xs ${
-                      isHot ? 'bg-green-500 text-white' :
-                      isWarm ? 'bg-yellow-400 text-gray-800' :
-                      'bg-gray-100 text-gray-400'
-                    }`}
-                  >
-                    {isHot && '🔥'}
-                  </div>
-                )
-              })}
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 p-3 bg-green-50 rounded-lg">
-          <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-green-600" />
-            <span className="text-sm text-gray-700">Best: <span className="font-medium">Wed 12PM</span></span>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Keep existing mockups and add ref to them...
+  // Render specific mockups based on type
   if (type === 'ai-generation') {
     return (
       <div ref={mockupRef} className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 transform-gpu">
@@ -446,182 +229,6 @@ function FeatureMockup({ type }: { type: string }) {
     )
   }
 
-  if (type === 'competitors') {
-    return (
-      <div ref={mockupRef} className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 transform-gpu">
-        <div className="flex items-center justify-between mb-4">
-          <span className="font-medium text-gray-900">Competitor Tracking</span>
-          <Eye className="w-5 h-5 text-gray-400" />
-        </div>
-        <div className="space-y-3">
-          {[
-            { name: 'CompetitorA', posts: 12, engagement: '+24%', trend: 'up', color: 'red' },
-            { name: 'CompetitorB', posts: 8, engagement: '-5%', trend: 'down', color: 'orange' },
-            { name: 'CompetitorC', posts: 15, engagement: '+18%', trend: 'up', color: 'blue' },
-          ].map((comp, i) => (
-            <div key={i} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className={`w-8 h-8 rounded-full bg-${comp.color}-100 flex items-center justify-center`}>
-                    <span className="text-xs font-bold">{comp.name[0]}</span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">{comp.name}</span>
-                </div>
-                <div className={`text-xs font-medium ${comp.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                  {comp.trend === 'up' ? '↑' : '↓'} {comp.engagement}
-                </div>
-              </div>
-              <div className="flex items-center gap-4 text-xs text-gray-600">
-                <span>{comp.posts} posts this week</span>
-                <span>•</span>
-                <span className="text-gray-500">Avg. 1.2K views</span>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 p-3 bg-purple-50 rounded-lg">
-          <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-purple-600" />
-            <span className="text-sm text-gray-700">You're posting <span className="font-medium text-purple-600">2x more</span> than competitors</span>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (type === 'top-engagers') {
-    return (
-      <div ref={mockupRef} className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 transform-gpu">
-        <div className="flex items-center justify-between mb-4">
-          <span className="font-medium text-gray-900">Top Engagers</span>
-          <MessageSquare className="w-5 h-5 text-gray-400" />
-        </div>
-        <div className="space-y-2">
-          {[
-            { name: 'Alex Rivera', interactions: 47, avatar: 'AR', sentiment: 'positive' },
-            { name: 'Jordan Lee', interactions: 42, avatar: 'JL', sentiment: 'positive' },
-            { name: 'Sam Taylor', interactions: 38, avatar: 'ST', sentiment: 'neutral' },
-            { name: 'Casey Morgan', interactions: 35, avatar: 'CM', sentiment: 'positive' },
-            { name: 'Riley Chen', interactions: 31, avatar: 'RC', sentiment: 'positive' },
-          ].map((engager, i) => (
-            <div key={i} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
-              <div className="flex items-center gap-1">
-                <span className="text-lg font-bold text-gray-400">#{i + 1}</span>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-medium">
-                {engager.avatar}
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900">{engager.name}</div>
-                <div className="text-xs text-gray-500">{engager.interactions} interactions</div>
-              </div>
-              <div className="flex gap-1">
-                {engager.sentiment === 'positive' && <span className="text-sm">💚</span>}
-                {engager.sentiment === 'neutral' && <span className="text-sm">💛</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 pt-3 border-t border-gray-200">
-          <button className="w-full py-2 bg-[#0a66c2] text-white rounded-lg text-sm font-medium hover:bg-[#004182] transition-colors">
-            Generate AI Reply
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  if (type === 'post-insights') {
-    return (
-      <div ref={mockupRef} className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 transform-gpu">
-        <div className="flex items-center justify-between mb-4">
-          <span className="font-medium text-gray-900">Post Autopsy</span>
-          <Brain className="w-5 h-5 text-gray-400" />
-        </div>
-        <div className="space-y-3">
-          <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-            <div className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <div className="text-sm font-medium text-green-900 mb-1">Strong Hook</div>
-                <div className="text-xs text-green-700">Your opening question captured attention immediately (+40% CTR)</div>
-              </div>
-            </div>
-          </div>
-          <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-            <div className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <div className="text-sm font-medium text-green-900 mb-1">Perfect Timing</div>
-                <div className="text-xs text-green-700">Posted at peak audience activity (Wed 12PM)</div>
-              </div>
-            </div>
-          </div>
-          <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-            <div className="flex items-start gap-2">
-              <Lightbulb className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <div className="text-sm font-medium text-yellow-900 mb-1">Improvement Area</div>
-                <div className="text-xs text-yellow-700">Add more line breaks for readability (+15% engagement)</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-700">Overall Score</span>
-            <span className="font-bold text-blue-600">8.7/10</span>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (type === 'content-ideas') {
-    return (
-      <div ref={mockupRef} className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 transform-gpu">
-        <div className="flex items-center justify-between mb-4">
-          <span className="font-medium text-gray-900">AI Content Ideas</span>
-          <Lightbulb className="w-5 h-5 text-gray-400" />
-        </div>
-        <div className="space-y-2">
-          {[
-            { topic: 'How AI is transforming B2B sales in 2025', score: 94, trend: 'hot' },
-            { topic: 'My biggest leadership lesson from failure', score: 89, trend: 'rising' },
-            { topic: '5 mistakes I see SaaS founders make', score: 87, trend: 'hot' },
-            { topic: 'Why we switched to async communication', score: 82, trend: 'steady' },
-            { topic: 'Remote work tips from 3 years experience', score: 78, trend: 'rising' },
-          ].map((idea, i) => (
-            <div key={i} className="p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer group">
-              <div className="flex items-start gap-2 mb-1">
-                <div className="flex-1">
-                  <div className="text-sm text-gray-900 font-medium mb-1">{idea.topic}</div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <div className="flex items-center gap-1">
-                      <Target className="w-3 h-3 text-purple-600" />
-                      <span className="text-purple-600 font-medium">{idea.score}% viral</span>
-                    </div>
-                    {idea.trend === 'hot' && (
-                      <span className="px-1.5 py-0.5 bg-red-100 text-red-600 rounded-full text-[10px] font-medium">🔥 Hot</span>
-                    )}
-                    {idea.trend === 'rising' && (
-                      <span className="px-1.5 py-0.5 bg-green-100 text-green-600 rounded-full text-[10px] font-medium">↗ Rising</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 text-center">
-          <button className="text-sm text-[#0a66c2] hover:underline font-medium">
-            Generate post from idea →
-          </button>
-        </div>
-      </div>
-    )
-  }
-
   if (type === 'analytics') {
     return (
       <div ref={mockupRef} className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 transform-gpu">
@@ -661,25 +268,39 @@ function FeatureMockup({ type }: { type: string }) {
                 <div className="h-full bg-blue-500 rounded-full w-[84%]" />
               </div>
             </div>
-            <div>
-              <div className="flex items-center justify-between text-xs mb-1">
-                <span className="text-gray-700">How-to Guide</span>
-                <span className="font-medium text-gray-900">3.9%</span>
-              </div>
-              <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-purple-500 rounded-full w-[78%]" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center justify-between text-xs mb-1">
-                <span className="text-gray-700">Personal Story</span>
-                <span className="font-medium text-gray-900">3.5%</span>
-              </div>
-              <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-green-500 rounded-full w-[70%]" />
-              </div>
-            </div>
           </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (type === 'content-ideas') {
+    return (
+      <div ref={mockupRef} className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 transform-gpu">
+        <div className="flex items-center justify-between mb-4">
+          <span className="font-medium text-gray-900">AI Content Ideas</span>
+          <Lightbulb className="w-5 h-5 text-gray-400" />
+        </div>
+        <div className="space-y-2">
+          {[
+            { topic: 'How AI is transforming B2B sales in 2025', score: 94, trend: 'hot' },
+            { topic: 'My biggest leadership lesson from failure', score: 89, trend: 'rising' },
+            { topic: '5 mistakes I see SaaS founders make', score: 87, trend: 'hot' },
+          ].map((idea, i) => (
+            <div key={i} className="p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer group">
+              <div className="flex items-start gap-2 mb-1">
+                <div className="flex-1">
+                  <div className="text-sm text-gray-900 font-medium mb-1">{idea.topic}</div>
+                  <div className="flex items-center gap-2 text-xs">
+                    <div className="flex items-center gap-1">
+                      <Target className="w-3 h-3 text-purple-600" />
+                      <span className="text-purple-600 font-medium">{idea.score}% viral</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     )
@@ -740,10 +361,10 @@ export default function FeaturesPage() {
             The Most Complete LinkedIn Tool
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-            AI content generation, lead discovery, viral predictions, competitor tracking, and more—all in one platform.
+            AI content generation, smart scheduling, templates, and more—all in one platform.
           </p>
           <Link href="/signup">
-            <Button size="lg">Start Free Trial - No Credit Card</Button>
+            <Button size="lg">Start Free Today - 5 Posts/Month</Button>
           </Link>
         </div>
       </section>
@@ -800,11 +421,11 @@ export default function FeaturesPage() {
             Ready to dominate LinkedIn?
           </h2>
           <p className="text-xl text-white/80 mb-8">
-            Join thousands using LinkedAI for lead generation, viral content, and growth tracking.
+            Join thousands using LinkedAI to automate their LinkedIn presence.
           </p>
           <Link href="/signup">
             <Button size="lg" className="bg-white text-[#0a66c2] hover:bg-gray-100">
-              Start Free - 5 AI Posts + 50 Leads/Month
+              Start Free - 5 AI Posts/Month
             </Button>
           </Link>
         </div>

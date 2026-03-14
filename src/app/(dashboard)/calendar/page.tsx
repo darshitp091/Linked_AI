@@ -29,7 +29,7 @@ export default function CalendarPage() {
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 })
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
-  const timeSlots = Array.from({ length: 18 }, (_, i) => i + 6) // 6 AM to 11 PM
+  const timeSlots = Array.from({ length: 24 }, (_, i) => i) // Full 24 hours
 
   useEffect(() => {
     fetchScheduledPosts()

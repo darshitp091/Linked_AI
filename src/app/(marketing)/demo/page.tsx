@@ -107,11 +107,11 @@ export default function DemoPage() {
             Ready to Get Started?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Start your free 14-day trial today. No credit card required.
+            Start free today. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-white text-[#0a66c2] hover:bg-gray-100">
-              Start Free Trial
+              Start Free Today
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
               Schedule a Personal Demo

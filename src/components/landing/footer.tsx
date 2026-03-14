@@ -6,20 +6,13 @@ const footerLinks = {
   product: [
     { href: '/features', label: 'Features' },
     { href: '/pricing', label: 'Pricing' },
-    { href: '/integrations', label: 'Integrations' },
-    { href: '/api', label: 'API' },
   ],
   company: [
     { href: '/about', label: 'About Us' },
     { href: '/blog', label: 'Blog' },
-    { href: '/careers', label: 'Careers' },
-    { href: '/press', label: 'Press' },
   ],
   resources: [
     { href: '/help', label: 'Help Center' },
-    { href: '/guides', label: 'Guides' },
-    { href: '/templates', label: 'Templates' },
-    { href: '/community', label: 'Community' },
   ],
   legal: [
     { href: '/privacy', label: 'Privacy Policy' },

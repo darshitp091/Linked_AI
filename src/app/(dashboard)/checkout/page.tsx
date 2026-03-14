@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -20,31 +20,33 @@ const planDetails = {
     icon: Zap,
     color: 'from-[#0a66c2] to-blue-600',
     features: [
-      '100 AI-generated posts/month',
+      '100 AI generations/month',
       'Priority scheduling',
       '5 LinkedIn accounts',
-      'Basic analytics',
+      'Advanced analytics',
       'Priority support',
+      'Post templates library',
     ],
   },
   standard: {
     name: 'Standard',
-    price: { USD: 14.99, INR: 1299 },
+    price: { USD: 14.99, INR: 1699 },
     period: 'month',
     icon: Star,
     color: 'from-purple-500 to-purple-600',
     features: [
-      '500 AI-generated posts/month',
+      '500 AI generations/month',
       'Unlimited scheduling',
       '10 LinkedIn accounts',
       'Advanced insights & analytics',
       '24/7 Dedicated support',
       'Team collaboration',
+      'Content calendar',
     ],
   },
 }
 
-import { Suspense } from 'react'
+
 
 function CheckoutContent() {
   const router = useRouter()
@@ -110,13 +112,13 @@ function CheckoutContent() {
         throw new Error(errorData.error || 'Failed to create order')
       }
 
-      const { orderId, amount, currency, keyId } = await orderResponse.json()
+      const { orderId, amount, currency: resCurrency, keyId } = await orderResponse.json()
 
       // Initialize Razorpay payment
       const options = {
         key: keyId,
         amount: amount,
-        currency: currency,
+        currency: resCurrency,
         name: 'LinkedAI',
         description: `${plan.name} Plan Subscription`,
         order_id: orderId,

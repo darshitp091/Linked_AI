@@ -6,61 +6,37 @@ import { ArrowRight, Calendar, User, Clock } from 'lucide-react'
 const blogPosts = [
   {
     title: 'How to Write LinkedIn Posts That Get Engagement',
-    excerpt: 'Learn the secrets to creating LinkedIn content that resonates with your audience and drives meaningful engagement.',
+    excerpt: 'The first two lines of your LinkedIn post are the most critical. This is where users decide whether to click "see more." High-engagement hooks usually evoke curiosity, challenge a common belief, or offer immediate value.',
     category: 'Content Strategy',
-    author: 'Sarah Chen',
-    date: 'Nov 15, 2024',
-    readTime: '5 min read',
-    slug: 'linkedin-posts-engagement',
-  },
-  {
-    title: 'The Best Times to Post on LinkedIn in 2024',
-    excerpt: 'We analyzed millions of posts to find the optimal posting times for maximum visibility and engagement.',
-    category: 'Analytics',
-    author: 'Michael Park',
-    date: 'Nov 12, 2024',
-    readTime: '4 min read',
-    slug: 'best-times-post-linkedin',
-  },
-  {
-    title: 'AI in Content Creation: A Complete Guide',
-    excerpt: 'How artificial intelligence is transforming the way professionals create and share content on social media.',
-    category: 'AI & Technology',
-    author: 'David Kim',
-    date: 'Nov 8, 2024',
-    readTime: '7 min read',
-    slug: 'ai-content-creation-guide',
-  },
-  {
-    title: 'Building Your Personal Brand on LinkedIn',
-    excerpt: 'A step-by-step guide to establishing yourself as a thought leader in your industry.',
-    category: 'Personal Branding',
-    author: 'Emily Rodriguez',
-    date: 'Nov 5, 2024',
-    readTime: '6 min read',
-    slug: 'personal-brand-linkedin',
-  },
-  {
-    title: '10 LinkedIn Post Templates That Work',
-    excerpt: 'Ready-to-use templates for different types of LinkedIn posts that consistently perform well.',
-    category: 'Templates',
-    author: 'Sarah Chen',
-    date: 'Nov 1, 2024',
+    author: 'Patel Darshit',
+    date: 'March 15, 2024',
     readTime: '8 min read',
-    slug: 'linkedin-post-templates',
+    slug: 'linkedin-posts-engagement',
+    image: '/blog/linkedin-automation-cover-1.png'
   },
   {
-    title: 'How to Grow Your LinkedIn Following Organically',
-    excerpt: 'Proven strategies for building a genuine following without paid promotion or shortcuts.',
-    category: 'Growth',
-    author: 'Michael Park',
-    date: 'Oct 28, 2024',
-    readTime: '5 min read',
-    slug: 'grow-linkedin-following',
+    title: 'AI in Content Creation: A Complete Guide for Professionals',
+    excerpt: 'Artificial Intelligence is no longer a futuristic concept; it\'s a present-day tool that is revolutionizing how we work. For LinkedIn creators, AI is the ultimate co-pilot for brainstorming, drafting, and optimizing content.',
+    category: 'AI & Technology',
+    author: 'Anshul Singh Baghel',
+    date: 'March 12, 2024',
+    readTime: '10 min read',
+    slug: 'ai-content-creation-guide',
+    image: '/blog/ai-content-creation-cover-2.png'
   },
+  {
+    title: 'Building Your Personal Brand on LinkedIn in 2024',
+    excerpt: 'Your personal brand is what people say about you when you\'re not in the room. On LinkedIn, your brand is your digital reputation. It’s the difference between being a commodity and being an authority.',
+    category: 'Personal Branding',
+    author: 'Rishi Jain',
+    date: 'March 10, 2024',
+    readTime: '12 min read',
+    slug: 'personal-brand-linkedin',
+    image: '/blog/personal-branding-cover-3.png'
+  }
 ]
 
-const categories = ['All', 'Content Strategy', 'Analytics', 'AI & Technology', 'Personal Branding', 'Templates', 'Growth']
+const categories = ['All', 'Content Strategy', 'AI & Technology', 'Personal Branding']
 
 export default function BlogPage() {
   return (
@@ -108,8 +84,14 @@ export default function BlogPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {blogPosts.map((post, index) => (
               <article key={index} className="group">
-                <div className="bg-gray-100 rounded-xl h-48 mb-4 overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-br from-[#0a66c2]/20 to-[#057642]/20 group-hover:scale-105 transition-transform duration-300" />
+                <div className="relative aspect-video rounded-xl mb-4 overflow-hidden border border-gray-100 shadow-sm">
+                  <Image
+                    src={post.image || '/blog/placeholder.png'}
+                    alt={post.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    unoptimized
+                  />
                 </div>
                 <div className="space-y-3">
                   <span className="inline-block px-3 py-1 bg-[#0a66c2]/10 text-[#0a66c2] text-xs font-medium rounded-full">

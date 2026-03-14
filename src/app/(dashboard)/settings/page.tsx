@@ -364,7 +364,7 @@ export default function SettingsPage() {
                 <div className="mt-4 pt-4 border-t border-gray-100">
                   <p className="text-xs text-gray-500">Member since</p>
                   <p className="text-sm font-medium text-gray-900">
-                    {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '-'}
+                    {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '-'}
                   </p>
                 </div>
               </div>
@@ -379,14 +379,14 @@ export default function SettingsPage() {
                   className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl font-medium transition-colors text-left flex items-center gap-3"
                 >
                   <Bell className="w-5 h-5 text-gray-500" />
-                  Notifications
+                  Profile Settings
                 </button>
                 <button
                   onClick={() => document.getElementById('section-privacy')?.scrollIntoView({ behavior: 'smooth' })}
                   className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl font-medium transition-colors text-left flex items-center gap-3"
                 >
                   <Shield className="w-5 h-5 text-gray-500" />
-                  Privacy &amp; Security
+                  LinkedIn Accounts
                 </button>
                 <button
                   onClick={handleLogout}

@@ -34,7 +34,7 @@ const plans = [
   {
     id: 'pro',
     name: 'Pro',
-    price: '₹999',
+    price: '₹699',
     period: 'per month',
     description: 'For professionals',
     icon: Zap,
@@ -54,7 +54,7 @@ const plans = [
   {
     id: 'standard',
     name: 'Standard',
-    price: '₹2,999',
+    price: '₹1,699',
     period: 'per month',
     description: 'For growing businesses',
     icon: Star,
@@ -447,8 +447,8 @@ export default function PricingPage() {
                   <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-t-2 border-gray-300">
                     <td className="px-6 py-5 text-sm font-bold text-gray-900">Monthly Price</td>
                     <td className="px-6 py-5 text-center"><span className="text-xl font-bold text-gray-900">₹0</span></td>
-                    <td className="px-6 py-5 text-center bg-blue-100/80"><span className="text-xl font-bold text-[#0a66c2]">₹999</span></td>
-                    <td className="px-6 py-5 text-center"><span className="text-xl font-bold text-gray-900">₹2,999</span></td>
+                    <td className="px-6 py-5 text-center bg-blue-100/80"><span className="text-xl font-bold text-[#0a66c2]">₹699</span></td>
+    <td className="px-6 py-5 text-center"><span className="text-xl font-bold text-gray-900">₹1,699</span></td>
                     <td className="px-6 py-5 text-center"><span className="text-sm font-semibold text-orange-600">Contact Us</span></td>
                   </tr>
                 </tbody>

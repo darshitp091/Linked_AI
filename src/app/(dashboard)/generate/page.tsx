@@ -534,9 +534,12 @@ export default function GeneratePage() {
                       <div className="space-y-4">
                         {/* Title */}
                         {post.topic && (
-                          <h3 className="text-base font-bold text-gray-900 leading-tight border-b border-gray-100 pb-3">
-                            {post.topic}
-                          </h3>
+                          <div className="mb-4">
+                            <h3 className="text-lg md:text-xl font-extrabold text-[#0a66c2] leading-tight tracking-tight uppercase">
+                              {post.topic}
+                            </h3>
+                            <div className="h-1 w-12 bg-blue-600 rounded-full mt-2" />
+                          </div>
                         )}
                         {/* Full Post Body */}
                         <p className="text-gray-800 whitespace-pre-wrap text-sm leading-relaxed">

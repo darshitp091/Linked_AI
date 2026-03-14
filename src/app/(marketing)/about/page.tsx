@@ -26,10 +26,9 @@ const values = [
 ]
 
 const team = [
-  { name: 'Sarah Chen', role: 'CEO & Co-founder', image: 'SC' },
-  { name: 'Michael Park', role: 'CTO & Co-founder', image: 'MP' },
-  { name: 'Emily Rodriguez', role: 'Head of Product', image: 'ER' },
-  { name: 'David Kim', role: 'Head of AI', image: 'DK' },
+  { name: 'Patel Darshit', role: 'FOUNDER & Developer', image: 'PD' },
+  { name: 'Anshul Singh Baghel', role: 'Co-Founder & Developer', image: 'AS' },
+  { name: 'Rishi Jain', role: 'Co-Founder & GM', image: 'RJ' },
 ]
 
 export default function AboutPage() {

@@ -33,7 +33,7 @@ export const PLAN_CONFIGS = {
   pro: {
     id: 'pro',
     name: 'Pro',
-    price: 799, // $7.99 in cents
+    price: 699, // ₹699
     posts_limit: 100,
     ai_credits: 500,
     features: [
@@ -47,7 +47,7 @@ export const PLAN_CONFIGS = {
   standard: {
     id: 'standard',
     name: 'Standard',
-    price: 1499, // $14.99 in cents
+    price: 1699, // ₹1699
     posts_limit: 500,
     ai_credits: 2000,
     features: [

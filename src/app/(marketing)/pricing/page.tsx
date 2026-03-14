@@ -18,7 +18,7 @@ const plans = [
     description: 'Perfect for getting started',
     icon: Sparkles,
     color: 'from-gray-500 to-gray-600',
-    postsPerMonth: '5 AI posts/month',
+    postsPerMonth: '5 AI generations/month',
     linkedinAccounts: '1 LinkedIn account',
     features: [
       '5 AI-generated posts/month',
@@ -39,15 +39,16 @@ const plans = [
     description: 'For serious content creators',
     icon: Zap,
     color: 'from-[#0a66c2] to-blue-600',
-    postsPerMonth: '100 AI posts/month',
+    postsPerMonth: '100 AI generations/month',
     comparison: '20x more than Free',
     linkedinAccounts: '5 LinkedIn accounts',
     features: [
       '100 AI-generated posts/month',
       'Priority scheduling',
       'Auto-posting to LinkedIn',
-      'Basic analytics',
+      'Advanced analytics',
       'Priority support',
+      'Post templates library',
     ],
     buttonText: 'Get Started',
     buttonLink: '/signup?plan=pro',
@@ -56,12 +57,12 @@ const plans = [
   {
     id: 'standard',
     name: 'Standard',
-    price: { USD: 14.99, INR: 1299 },
+    price: { USD: 14.99, INR: 1699 },
     period: 'per month',
     description: 'For growing businesses',
     icon: Star,
     color: 'from-purple-500 to-purple-600',
-    postsPerMonth: '500 AI posts/month',
+    postsPerMonth: '500 AI generations/month',
     comparison: '100x more than Free',
     linkedinAccounts: '10 LinkedIn accounts',
     features: [
@@ -71,6 +72,7 @@ const plans = [
       'Advanced insights & analytics',
       '24/7 Dedicated support',
       'Team collaboration',
+      'Content calendar',
     ],
     buttonText: 'Get Started',
     buttonLink: '/signup?plan=standard',
@@ -191,7 +193,7 @@ export default function PricingPage() {
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             {isAuthenticated
               ? `You're currently on the ${currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)} plan. Upgrade to unlock more power.`
-              : 'Start free and upgrade for priority features. All plans include Groq Llama 3 generation.'
+              : 'Start free and upgrade for priority features. All plans include Groq generation.'
             }
           </p>
 
@@ -396,7 +398,7 @@ export default function PricingPage() {
                 Is the AI content generation really free?
               </h3>
               <p className="text-gray-600">
-                Yes! We use Google Gemini 1.5 Flash which is 100% free. Your only limits are based on your plan tier (5 posts/month on Free, 100 on Pro, 500 on Standard).
+                Yes! We use Groq which is lightning fast and 100% free. Your only limits are based on your plan tier (5 posts/month on Free, 100 on Pro, 500 on Standard).
               </p>
             </div>
 
@@ -414,7 +416,7 @@ export default function PricingPage() {
                 What happens when I hit my usage limits?
               </h3>
               <p className="text-gray-600">
-                When you reach your monthly limit for AI posts or weekly limit for leads, you'll need to upgrade to continue. Your scheduled posts will still publish, but you won't be able to create new ones until the next cycle or you upgrade.
+                When you reach your monthly limit for AI posts, you'll need to upgrade to continue. Your scheduled posts will still publish, but you won't be able to create new ones until the next cycle or you upgrade.
               </p>
             </div>
 
