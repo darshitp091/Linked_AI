@@ -33,7 +33,7 @@ const blogPosts = {
     author: 'Patel Darshit',
     date: 'March 15, 2024',
     readTime: '8 min read',
-    image: '/blog/automation-cover.png'
+    image: '/blog/linkedin-automation-cover-1.png'
   },
   'ai-content-creation-guide': {
     title: 'AI in Content Creation: A Complete Guide for Professionals',
@@ -59,7 +59,7 @@ const blogPosts = {
     author: 'Anshul Singh Baghel',
     date: 'March 12, 2024',
     readTime: '10 min read',
-    image: '/blog/content-creation.png'
+    image: '/blog/ai-content-creation-cover-2.png'
   },
   'personal-brand-linkedin': {
     title: 'Building Your Personal Brand on LinkedIn in 2024',
@@ -85,7 +85,7 @@ const blogPosts = {
     author: 'Rishi Jain',
     date: 'March 10, 2024',
     readTime: '12 min read',
-    image: '/blog/branding.png'
+    image: '/blog/personal-branding-cover-3.png'
   }
 }
 

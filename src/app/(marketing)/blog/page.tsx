@@ -1,6 +1,7 @@
 import { Navbar } from '@/components/landing/navbar'
 import { Footer } from '@/components/landing/footer'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Calendar, User, Clock } from 'lucide-react'
 
 const blogPosts = [
