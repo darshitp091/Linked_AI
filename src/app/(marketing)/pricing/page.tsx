@@ -57,7 +57,7 @@ const plans = [
   {
     id: 'standard',
     name: 'Standard',
-    price: { USD: 14.99, INR: 1699 },
+    price: { USD: 14.99, INR: 1299 },
     period: 'per month',
     description: 'For growing businesses',
     icon: Star,

@@ -47,7 +47,7 @@ export const PLAN_CONFIGS = {
   standard: {
     id: 'standard',
     name: 'Standard',
-    price: 1699, // ₹1699
+    price: 1299, // ₹1299
     posts_limit: 500,
     ai_credits: 2000,
     features: [

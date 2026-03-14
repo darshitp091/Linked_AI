@@ -30,7 +30,7 @@ const planDetails = {
   },
   standard: {
     name: 'Standard',
-    price: { USD: 14.99, INR: 1699 },
+    price: { USD: 14.99, INR: 1299 },
     period: 'month',
     icon: Star,
     color: 'from-purple-500 to-purple-600',
