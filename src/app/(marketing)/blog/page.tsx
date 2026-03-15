@@ -2,44 +2,28 @@ import { Navbar } from '@/components/landing/navbar'
 import { Footer } from '@/components/landing/footer'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Calendar, User, Clock } from 'lucide-react'
+import { ArrowRight, Calendar, User, Clock, Sparkles } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
+import { format, parseISO } from 'date-fns'
 
-const blogPosts = [
-  {
-    title: 'How to Write LinkedIn Posts That Get Engagement',
-    excerpt: 'The first two lines of your LinkedIn post are the most critical. This is where users decide whether to click "see more." High-engagement hooks usually evoke curiosity, challenge a common belief, or offer immediate value.',
-    category: 'Content Strategy',
-    author: 'Patel Darshit',
-    date: 'March 15, 2024',
-    readTime: '8 min read',
-    slug: 'linkedin-posts-engagement',
-    image: '/blog/linkedin-automation-cover-1.png'
-  },
-  {
-    title: 'AI in Content Creation: A Complete Guide for Professionals',
-    excerpt: 'Artificial Intelligence is no longer a futuristic concept; it\'s a present-day tool that is revolutionizing how we work. For LinkedIn creators, AI is the ultimate co-pilot for brainstorming, drafting, and optimizing content.',
-    category: 'AI & Technology',
-    author: 'Anshul Singh Baghel',
-    date: 'March 12, 2024',
-    readTime: '10 min read',
-    slug: 'ai-content-creation-guide',
-    image: '/blog/ai-content-creation-cover-2.png'
-  },
-  {
-    title: 'Building Your Personal Brand on LinkedIn in 2024',
-    excerpt: 'Your personal brand is what people say about you when you\'re not in the room. On LinkedIn, your brand is your digital reputation. It’s the difference between being a commodity and being an authority.',
-    category: 'Personal Branding',
-    author: 'Rishi Jain',
-    date: 'March 10, 2024',
-    readTime: '12 min read',
-    slug: 'personal-brand-linkedin',
-    image: '/blog/personal-branding-cover-3.png'
+export const dynamic = 'force-dynamic'
+
+export default async function BlogPage() {
+  const supabase = await createClient()
+  
+  // Fetch published blog posts
+  const { data: blogPosts, error } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .eq('is_published', true)
+    .order('published_at', { ascending: false })
+
+  const categories = ['All', 'Content Strategy', 'AI & Technology', 'Personal Branding', 'Automation']
+
+  if (error) {
+    console.error('Error fetching blog posts:', error)
   }
-]
 
-const categories = ['All', 'Content Strategy', 'AI & Technology', 'Personal Branding']
-
-export default function BlogPage() {
   return (
     <main className="min-h-screen bg-white">
       <Navbar />
@@ -65,7 +49,7 @@ export default function BlogPage() {
           <div className="flex flex-wrap gap-3 justify-center">
             {categories.map((category) => (
               <button
-                key={category}
+								key={category}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   category === 'All'
                     ? 'bg-[#0a66c2] text-white'
@@ -82,52 +66,60 @@ export default function BlogPage() {
       {/* Blog Posts Grid */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post, index) => (
-              <article key={index} className="group">
-                <div className="relative aspect-video rounded-xl mb-4 overflow-hidden border border-gray-100 shadow-sm">
-                  <Image
-                    src={post.image || '/blog/placeholder.png'}
-                    alt={post.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    unoptimized
-                  />
-                </div>
-                <div className="space-y-3">
-                  <span className="inline-block px-3 py-1 bg-[#0a66c2]/10 text-[#0a66c2] text-xs font-medium rounded-full">
-                    {post.category}
-                  </span>
-                  <h2 className="text-xl font-bold text-gray-900 group-hover:text-[#0a66c2] transition-colors">
-                    <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-                  </h2>
-                  <p className="text-gray-600 line-clamp-2">{post.excerpt}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <User className="w-4 h-4" />
-                      {post.author}
+          {!blogPosts || blogPosts.length === 0 ? (
+            <div className="text-center py-20">
+              <Sparkles className="w-12 h-12 text-blue-200 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900">New insights coming soon</h3>
+              <p className="text-gray-500 mt-2">We're currently drafting some amazing content for you.</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {blogPosts.map((post) => (
+                <article key={post.id} className="group">
+                  <Link href={`/blog/${post.slug}`}>
+                    <div className="relative aspect-video rounded-xl mb-4 overflow-hidden border border-gray-100 shadow-sm">
+                      <Image
+                        src={post.image_url || `https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1074&auto=format&fit=crop`}
+                        alt={post.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        unoptimized
+                      />
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      {post.date}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      {post.readTime}
+                  </Link>
+                  <div className="space-y-3">
+                    <span className="inline-block px-3 py-1 bg-[#0a66c2]/10 text-[#0a66c2] text-xs font-medium rounded-full">
+                      {post.category || 'Insights'}
+                    </span>
+                    <h2 className="text-xl font-bold text-gray-900 group-hover:text-[#0a66c2] transition-colors">
+                      <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                    </h2>
+                    <p className="text-gray-600 line-clamp-2">{post.excerpt}</p>
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-1">
+                        <User className="w-4 h-4" />
+                        {post.author || 'LinkedAI Team'}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        {post.published_at ? format(parseISO(post.published_at), 'MMM d, yyyy') : 'Recently'}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          )}
 
           {/* Load More */}
-          <div className="text-center mt-12">
-            <button className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors">
-              Load More Articles
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+          {blogPosts && blogPosts.length > 9 && (
+            <div className="text-center mt-12">
+              <button className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors">
+                Load More Articles
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -140,7 +132,7 @@ export default function BlogPage() {
             <input
               type="email"
               placeholder="Enter your email"
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a66c2]/20 focus:border-[#0a66c2]"
+              className="px-4 py-3 flex-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a66c2]/20 focus:border-[#0a66c2]"
             />
             <button className="px-6 py-3 bg-[#0a66c2] text-white rounded-full font-medium hover:bg-[#004182] transition-colors">
               Subscribe

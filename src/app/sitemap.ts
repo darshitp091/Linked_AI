@@ -1,7 +1,9 @@
 import { MetadataRoute } from 'next'
+import { createClient } from '@/lib/supabase/server'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://ai-linked.vercel.app'
+  const supabase = await createClient()
   
   // Define all static marketing routes
   const routes = [
@@ -18,17 +20,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === '' ? 1 : 0.8,
   }))
 
-  // Blog posts - in a real app these would be fetched from a DB
-  const blogPosts = [
-    '/blog/linkedin-posts-engagement',
-    '/blog/ai-content-creation-guide',
-    '/blog/personal-brand-linkedin',
-  ].map((post) => ({
-    url: `${baseUrl}${post}`,
-    lastModified: new Date(),
+  // Fetch dynamic blog posts from DB
+  const { data: blogPosts } = await supabase
+    .from('blog_posts')
+    .select('slug, updated_at')
+    .eq('is_published', true)
+
+  const dynamicRoutes = (blogPosts || []).map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: post.updated_at ? new Date(post.updated_at) : new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.6,
   }))
 
-  return [...routes, ...blogPosts]
+  return [...routes, ...dynamicRoutes]
 }
