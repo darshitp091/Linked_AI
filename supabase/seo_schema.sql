@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
 CREATE TABLE IF NOT EXISTS public.trending_keywords (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   keyword TEXT UNIQUE NOT NULL,
+  slug TEXT UNIQUE, -- URL-friendly version of the keyword
   source TEXT DEFAULT 'LinkedIn',
   category TEXT,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'ignored')),
