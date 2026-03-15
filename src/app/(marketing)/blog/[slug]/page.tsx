@@ -9,13 +9,41 @@ import { format, parseISO } from 'date-fns'
 
 export const dynamic = 'force-dynamic'
 
-interface BlogPostPageProps {
-  params: {
-    slug: string
-  }
+/**
+ * Simple Markdown to HTML converter for professional blog rendering
+ */
+function renderMarkdown(content: string) {
+  return content
+    .split('\n\n')
+    .map((block, i) => {
+      // H1/H2/H3
+      if (block.startsWith('# ')) return <h1 key={i} className="text-3xl font-bold mt-8 mb-4">{block.replace('# ', '')}</h1>
+      if (block.startsWith('## ')) return <h2 key={i} className="text-2xl font-bold mt-8 mb-4">{block.replace('## ', '')}</h2>
+      if (block.startsWith('### ')) return <h3 key={i} className="text-xl font-bold mt-6 mb-3">{block.replace('### ', '')}</h3>
+      
+      // Lists
+      if (block.startsWith('- ') || block.startsWith('* ')) {
+        const items = block.split('\n').map(line => line.replace(/^[-*]\s/, ''))
+        return (
+          <ul key={i} className="list-disc pl-6 space-y-2 mb-4">
+            {items.map((item, j) => <li key={j}>{item}</li>)}
+          </ul>
+        )
+      }
+
+      // Default paragraph with bold support
+      const formatted = block.split(/(\*\*.*?\*\*)/g).map((part, k) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return <strong key={k}>{part.slice(2, -2)}</strong>
+        }
+        return part
+      })
+      
+      return <p key={i} className="text-gray-700 leading-relaxed mb-4">{formatted}</p>
+    })
 }
 
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const supabase = await createClient()
 
@@ -70,30 +98,28 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {post.image_url && (
             <div className="relative aspect-video rounded-2xl overflow-hidden mb-12 border border-gray-100 shadow-md">
-              <Image
+              <img
                 src={post.image_url}
                 alt={post.title}
-                fill
-                className="object-cover"
-                unoptimized
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1074&auto=format&fit=crop'
+                }}
               />
             </div>
           )}
 
           <div className="prose prose-lg prose-blue max-w-none">
-            {/* Simple Markdown rendering - for production use a proper library like react-markdown */}
-            <div className="whitespace-pre-wrap text-gray-700 leading-relaxed space-y-4">
-              {post.content}
-            </div>
+            {renderMarkdown(post.content)}
           </div>
 
           <div className="mt-16 pt-8 border-t border-gray-100">
-            <div className="bg-gray-50 rounded-2xl p-8 text-center">
+            <div className="bg-gray-50 rounded-2xl p-8 text-center ring-1 ring-gray-200">
               <h3 className="text-xl font-bold text-gray-900 mb-2">Want to grow on LinkedIn like a pro?</h3>
               <p className="text-gray-600 mb-6">Our AI tool helps you brainstorm, draft, and schedule posts that actually get engagement.</p>
               <Link 
                 href="/signup" 
-                className="inline-flex items-center justify-center px-8 py-4 bg-[#0a66c2] text-white rounded-full font-bold hover:bg-[#004182] transition-colors"
+                className="inline-flex items-center justify-center px-8 py-4 bg-[#0a66c2] text-white rounded-full font-bold hover:bg-[#004182] transition-colors shadow-lg shadow-blue-500/20"
               >
                 Start Free Today
               </Link>

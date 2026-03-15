@@ -75,24 +75,25 @@ export default async function BlogPage() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {blogPosts.map((post) => (
-                <article key={post.id} className="group">
-                  <Link href={`/blog/${post.slug}`}>
-                    <div className="relative aspect-video rounded-xl mb-4 overflow-hidden border border-gray-100 shadow-sm">
-                      <Image
-                        src={post.image_url || `https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1074&auto=format&fit=crop`}
-                        alt={post.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        unoptimized
-                      />
-                    </div>
-                  </Link>
+                <article key={post.id} className="group relative">
+                  <div className="relative aspect-video rounded-xl mb-4 overflow-hidden border border-gray-100 shadow-sm">
+                    <Image
+                      src={post.image_url || `https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1074&auto=format&fit=crop`}
+                      alt={post.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      unoptimized
+                    />
+                  </div>
                   <div className="space-y-3">
                     <span className="inline-block px-3 py-1 bg-[#0a66c2]/10 text-[#0a66c2] text-xs font-medium rounded-full">
                       {post.category || 'Insights'}
                     </span>
                     <h2 className="text-xl font-bold text-gray-900 group-hover:text-[#0a66c2] transition-colors">
-                      <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                      <Link href={`/blog/${post.slug}`}>
+                        <span className="absolute inset-0" aria-hidden="true" />
+                        {post.title}
+                      </Link>
                     </h2>
                     <p className="text-gray-600 line-clamp-2">{post.excerpt}</p>
                     <div className="flex items-center gap-4 text-sm text-gray-500">

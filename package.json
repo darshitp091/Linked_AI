@@ -21,6 +21,7 @@
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.84.0",
+    "@tailwindcss/typography": "^0.5.19",
     "@uploadthing/react": "^7.3.3",
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^2.0.0",
