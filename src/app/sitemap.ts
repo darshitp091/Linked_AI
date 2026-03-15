@@ -1,7 +1,9 @@
 import { MetadataRoute } from 'next'
+import { createClient } from '@/lib/supabase/server'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://ai-linked.vercel.app'
+  const supabase = await createClient()
   
   // Define static marketing routes
   const routes = [
@@ -22,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .from('trending_keywords')
     .select('slug, updated_at')
     
-  const solutionRoutes = (keywords || []).filter(k => k.slug).map((k) => ({
+  const solutionRoutes = (keywords || []).filter((k: { slug: string | null }) => k.slug).map((k: { slug: string; updated_at: string }) => ({
     url: `${baseUrl}/solutions/${k.slug}`,
     lastModified: k.updated_at ? new Date(k.updated_at) : new Date(),
     changeFrequency: 'monthly' as const,
