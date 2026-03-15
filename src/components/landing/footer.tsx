@@ -9,7 +9,6 @@ const footerLinks = {
   ],
   company: [
     { href: '/about', label: 'About Us' },
-    { href: '/blog', label: 'Blog' },
   ],
   resources: [
     { href: '/help', label: 'Help Center' },
