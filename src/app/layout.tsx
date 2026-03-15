@@ -66,8 +66,13 @@ export const metadata: Metadata = {
     apple: "/icon.png",
   },
   verification: {
-    google: "ADD_YOUR_GOOGLE_VERIFICATION_CODE_HERE",
+    google: "0WrWMJSbAPlEDBaLCgaWgJS-aih-NIocVf-GeRtVP4c",
   },
+  other: {
+    "google-site-verification": "0WrWMJSbAPlEDBaLCgaWgJS-aih-NIocVf-GeRtVP4c",
+  },
+  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
+  themeColor: "#0a66c2",
 };
 
 export default function RootLayout({
@@ -81,6 +86,23 @@ export default function RootLayout({
         <SessionProvider>
           <PostHogProvider>
             <Toaster position="top-right" />
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "Organization",
+                  "name": "LinkedAI",
+                  "url": "https://ai-linked.vercel.app",
+                  "logo": "https://ai-linked.vercel.app/linkedai-logo.png",
+                  "sameAs": [
+                    "https://twitter.com/linkedai",
+                    "https://linkedin.com/company/linkedai"
+                  ],
+                  "description": "AI LinkedIn Content Scheduler & Ghostwriter. Generate and schedule engaging posts with AI."
+                }),
+              }}
+            />
             {children}
             <Analytics />
             <SpeedInsights />
